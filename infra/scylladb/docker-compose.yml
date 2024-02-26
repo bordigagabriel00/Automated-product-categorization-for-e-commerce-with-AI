@@ -1,0 +1,12 @@
+version: '3'
+services:
+  scylla:
+    image: scylladb/scylla:latest
+    ports:
+      - "9042:9042"
+    environment:
+      SCYLLA_RPC_ADDRESS: 0.0.0.0
+    volumes:
+      - scylla_data:/var/lib/scylla
+volumes:
+  scylla_data:
