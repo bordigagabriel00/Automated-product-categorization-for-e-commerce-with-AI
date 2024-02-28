@@ -1,5 +1,4 @@
 .PHONY: run
-
-# Define how to start the FastAPI server.
+# Run server
 run:
-    poetry run uvicorn main:app --reload --port 9000
+	@poetry run uvicorn main:app --reload --port 9000

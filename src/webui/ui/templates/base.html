@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - AI</title>
+    <link href="/static/css/tailwind.css" rel="stylesheet">
+</head>
+<body class="font-sans bg-gray-100">
+    <header class="bg-gray-800 text-white text-xl p-4">AI</header>
+    <div class="flex">
+        <aside class="w-64 bg-gray-700 h-screen">
+            <!-- Menu lateral -->
+            <a href="/productos" hx-get="/productos" hx-target="#content" hx-swap="outerHTML">Productos</a>
+
+        </aside>
+        <main class="flex-1 p-8">
+            <!-- Contenido principal -->
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    <footer class="bg-gray-800 text-white text-center p-4">Equipo 5</footer>
+    <script src="/static/js/htmx.js"></script>
+</body>
+</html>
