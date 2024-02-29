@@ -1,14 +1,14 @@
 [tool.poetry]
-name = "scylladb"
+name = "nats-server"
 version = "0.1.0"
 description = ""
-authors = ["rcastillo <tepuybits@gmail.com>"]
+authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-python-dotenv = "^1.0.1"
-cassandra-driver = "^3.29.0"
+nats-py = "^2.7.2"
+asyncio = "^3.4.3"
 
 
 [build-system]
