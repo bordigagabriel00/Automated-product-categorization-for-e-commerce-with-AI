@@ -6,9 +6,9 @@ from config import settings
 from api.product.router import product_router
 from api.health.router import health_router
 from api.category.router import category_router
-from ui.view.home.router import home_router
+from views_router import main_router
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+
 
 # Define the app at the module level
 app: fastapi.applications.FastAPI = FastAPI(title=settings.app_name,
@@ -17,13 +17,9 @@ app: fastapi.applications.FastAPI = FastAPI(title=settings.app_name,
 
 BASE_DIR = pathlib.Path(__file__).parent
 BASE_STATIC_DIR = BASE_DIR / 'ui' / 'static'
-BASE_TEMPLATE_DIR = BASE_DIR / 'ui' / 'templates'
-print(BASE_DIR)
-print(BASE_STATIC_DIR)
-app.mount("/static", StaticFiles(directory=BASE_STATIC_DIR), name="static")
-print(BASE_TEMPLATE_DIR)
-templates = Jinja2Templates(directory=BASE_TEMPLATE_DIR )
 
+
+app.mount("/static", StaticFiles(directory=BASE_STATIC_DIR), name="static")
 
 
 
@@ -37,7 +33,7 @@ def startup_event():
     app.include_router(category_router)
 
     # Views
-    app.include_router(home_router)
+    app.include_router(main_router)
 
 
 if __name__ == "__main__":

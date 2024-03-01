@@ -1,4 +1,6 @@
 from pydantic_settings import BaseSettings
+from fastapi.templating import Jinja2Templates
+import pathlib
 
 
 class Settings(BaseSettings):
@@ -10,5 +12,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
 
-
+BASE_DIR = pathlib.Path(__file__).parent
+BASE_TEMPLATE_DIR = BASE_DIR / 'ui' / 'templates'
+templates = Jinja2Templates(directory=BASE_TEMPLATE_DIR )
 settings = Settings()
