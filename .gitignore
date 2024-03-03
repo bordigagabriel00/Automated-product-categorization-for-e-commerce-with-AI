@@ -3,3 +3,4 @@ infra/scylladb/.idea
 src/webui/.idea
 src/webui/.env
 src/webui/ui/static/node_modules
+**_pycache_**
