@@ -3,11 +3,10 @@ import pathlib
 import fastapi.applications
 from fastapi import FastAPI
 from config import settings
-from api.product.router import product_router
-from api.health.router import health_router
-from api.category.router import category_router
-from views_router import main_router
+
+
 from fastapi.staticfiles import StaticFiles
+from core import setup
 
 
 # Define the app at the module level
@@ -25,15 +24,16 @@ app.mount("/static", StaticFiles(directory=BASE_STATIC_DIR), name="static")
 
 @app.on_event("startup")
 def startup_event():
-    # Health definitions
-    app.include_router(health_router)
-    # Router definitions
-    app.include_router(product_router)
-    #  Category definitions
-    app.include_router(category_router)
+    # Setup routers
+    setup.config_router(app)
 
-    # Views
-    app.include_router(main_router)
+    # Setup event bus
+    setup.config_event_bus(app)
+
+    # Config views
+    setup.config_views(app)
+
+
 
 
 if __name__ == "__main__":
