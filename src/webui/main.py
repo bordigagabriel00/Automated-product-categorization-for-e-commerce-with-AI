@@ -1,13 +1,14 @@
-import uvicorn
+import logging
 import pathlib
-import fastapi.applications
-from fastapi import FastAPI
-from config import settings
 
+import fastapi.applications
+import uvicorn
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+
+from config import settings
 from core import setup
 from core.environment import ConfigProvider
-import logging
 
 # Define the app at the module level
 app: fastapi.applications.FastAPI = FastAPI(title=settings.app_name,
@@ -29,7 +30,6 @@ async def init_options(option: ConfigProvider) -> None:
     option.set_config("app", "base_static_dir", BASE_STATIC_DIR)
 
 
-
 @app.on_event("startup")
 async def startup_event():
     # Define environment
@@ -43,18 +43,6 @@ if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", reload=True)
 
 """
-# Ejemplo de uso
-config_manager = ConfigProvider()
-config_manager.set_config('database', 'host', 'localhost')
-config_manager.set_config('database', 'port', 5432)
-config_manager.set_config('general', 'debug_mode', True)
-
-config_manager.show_configs()
-# Obtiene un valor específico
-print(config_manager.get_config('database', 'host'))
-
-    TODO: Health
-    TODO: API Product
-    TODO: NOSQL
-    TODO: API Category
+TODO: topic predict.request
+TODO: topic predict.response
 """

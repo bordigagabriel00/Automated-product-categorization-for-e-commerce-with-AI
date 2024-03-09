@@ -1,6 +1,7 @@
-from pydantic_settings import BaseSettings
-from fastapi.templating import Jinja2Templates
 import pathlib
+
+from fastapi.templating import Jinja2Templates
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
