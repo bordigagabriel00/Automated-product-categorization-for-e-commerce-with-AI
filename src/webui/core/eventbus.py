@@ -4,6 +4,10 @@ from nats.aio.client import Client as NATS
 
 import config
 
+topic_predict_request = "predict.request"
+topic_predict_response = "predict.response"
+topic_health = "health"
+
 
 class NatsProvider:
     def __init__(self, servers=None, max_reconnect_attempts=5, reconnect_time_wait=2):

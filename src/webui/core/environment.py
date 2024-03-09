@@ -24,6 +24,3 @@ class ConfigProvider:
             print(f"Section: {section}")
             for attribute, value in attributes.items():
                 print(f"  Property: {attribute}, Value: {value}")
-
-
-

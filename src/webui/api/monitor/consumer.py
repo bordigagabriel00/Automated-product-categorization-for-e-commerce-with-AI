@@ -1,6 +1,5 @@
 import logging
-
-topic_health = "health"
+from core.eventbus import nats_provider as nats, topic_health
 
 
 async def monitor_message_handler(msg):

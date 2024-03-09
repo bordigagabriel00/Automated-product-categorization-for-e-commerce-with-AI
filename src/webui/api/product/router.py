@@ -1,7 +1,8 @@
 from fastapi import APIRouter
+
 from config import settings
 
-product_router = APIRouter(tags=['api'], prefix=settings.base_url + "product")
+product_router = APIRouter(tags=['api'], prefix=f"{settings.base_url}/product")
 
 
 @product_router.get("")

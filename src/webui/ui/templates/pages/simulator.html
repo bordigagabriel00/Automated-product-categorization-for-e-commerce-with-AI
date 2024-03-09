@@ -8,8 +8,8 @@
         <div class=" relative flex flex-col justify-center  overflow-hidden">
             <div class="   rounded-md lg:max-w-xl">
                 <h1 class="text-amber-50 block  text-2xl font-bold mb-2  text-center  ">Simulator</h1>
-                 <h2 class="text-amber-500 block  text-sm font-bold mb-2  text-center  ">Predict category</h2>
-                <form class="  ">
+                <h2 class="text-amber-500 block  text-sm font-bold mb-2  text-center  ">Predict category2</h2>
+                <form id="frmPredict">
                     <div class="mb-4 pt-3">
                         <label class="block  text-sm font-bold mb-2" for="name">
                             Name
@@ -52,17 +52,20 @@
                                 id="manufacturer">
                             <option value="tipo1">Manufacturer 1</option>
                             <option value="tipo2">Manufacturer 2</option>
-                            <!-- Add more options as needed -->
+
                         </select>
                     </div>
                     <div class="flex flex-row items-center justify-end p-3">
                         <ul class="menu menu-horizontal bg-base-200 p-1">
-                            <li class="btn btn-neutral "><a href="javascript:void(0);" onclick="cleanForm()">Clean</a></li>
-                            <li class="btn btn-accent "><a>Predict</a></li>
+                            <li class="btn btn-neutral "><a href="javascript:void(0);" onclick="cleanForm()">Clean</a>
+                            </li>
+                            <button type="submit" class="btn btn-accent">Predict</button>
                         </ul>
 
                     </div>
                 </form>
+                <!-- Div donde se mostrará la respuesta -->
+<div id="response"></div>
             </div>
         </div>
 
@@ -73,10 +76,83 @@
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const form = document.getElementById('frmPredict');
+        form.addEventListener('submit', predictForm);
+    });
+
     function cleanForm() {
         document.getElementById('name').value = '';
         document.getElementById('description').value = '';
+        document.getElementById('price').value = '0.0';
         document.getElementById('type').selectedIndex = 0;
+        document.getElementById('manufacturer').selectedIndex = 0;
+        // Remover mensaje de error si existe
+        const errorDiv = document.getElementById('error-message');
+        if (errorDiv) {
+            errorDiv.remove();
+        }
+    }
+
+    function predictForm(event) {
+        event.preventDefault(); // Prevent the form from submitting traditionally
+        console.log("enter")
+        const name = document.getElementById('name').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const price = document.getElementById('price').value.trim();
+        const type = document.getElementById('type').value;
+        const manufacturer = document.getElementById('manufacturer').value;
+
+
+        if (!name || !description || !price || type === '' || manufacturer === '') {
+            displayError("Please fill out all fields correctly.");
+            return;
+        }
+
+        const data = { name, description, price, type, manufacturer };
+        const jsonData = JSON.stringify(data);
+        console.log(jsonData)
+        fetch('api/v1/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: jsonData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById('response').innerHTML = JSON.stringify(data);
+            cleanForm(); // Opcional: limpiar formulario después del envío exitoso
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            displayError("Failed to predict. Please try again.");
+        });
+    }
+
+    function displayError(message) {
+        // Eliminar mensaje de error anterior si existe
+        const existingError = document.getElementById('error-message');
+        if (existingError) {
+            existingError.remove();
+        }
+
+        // Crear y mostrar mensaje de error
+        const errorDiv = document.createElement('div');
+        errorDiv.id = 'error-message';
+        errorDiv.innerHTML = `<div class="alert alert-error shadow-lg">
+                                  <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.268 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                    <span>${message}</span>
+                                  </div>
+                              </div>`;
+        document.querySelector('.relative.flex.flex-col.justify-center.overflow-hidden').prepend(errorDiv);
     }
 </script>
+
 {% endblock content %}

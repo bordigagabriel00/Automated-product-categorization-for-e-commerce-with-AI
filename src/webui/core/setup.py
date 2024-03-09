@@ -4,6 +4,7 @@ from api.category.router import category_router
 from api.health.router import health_router
 from api.monitor.consumer import topic_health, monitor_message_handler
 from api.product.router import product_router
+from api.simulator.router import predict_router
 from core.eventbus import nats_provider
 from views_router import main_router
 
@@ -11,6 +12,8 @@ from views_router import main_router
 def config_router(app: FastAPI) -> None:
     # Health definitions
     app.include_router(health_router)
+    # Router Simulator
+    app.include_router(predict_router)
     # Router definitions
     app.include_router(product_router)
     #  Category definitions

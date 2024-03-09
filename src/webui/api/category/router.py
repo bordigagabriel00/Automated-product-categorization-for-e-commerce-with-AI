@@ -1,7 +1,8 @@
 from fastapi import APIRouter
+
 from config import settings
 
-category_router = APIRouter(tags=['api'], prefix=settings.base_url + "category")
+category_router = APIRouter(tags=['api'], prefix=f"{settings.base_url}/category")
 
 
 @category_router.get("")

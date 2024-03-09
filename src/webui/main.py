@@ -37,6 +37,13 @@ async def startup_event():
     # Define View, Routers
     await setup.init(app)
 
+    routes_list = []
+    for route in app.routes:
+        if hasattr(route, "methods") and hasattr(route, "path"):
+            routes_list.append({"path": route.path, "methods": list(route.methods)})
+            logging.info(f"API: '{route}'")
+
+
 
 if __name__ == "__main__":
     # the port is defined by command

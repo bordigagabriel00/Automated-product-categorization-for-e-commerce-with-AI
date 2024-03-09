@@ -2,7 +2,7 @@
 from arango import ArangoClient
 
 # Setup client and database
-#TODO: FIXME Use settings
+# TODO: FIXME Use settings
 client = ArangoClient(hosts='http://localhost:8529')
 db = client.db('your_db_name', username='root', password='your_password')
 
@@ -10,7 +10,6 @@ db = client.db('your_db_name', username='root', password='your_password')
 class ItemStore:
     def create_product(self, item):
         return db.collection('items').insert(item.dict())
-
 
     def get_product(self, item_id):
         return db.collection('items').get(item_id)
