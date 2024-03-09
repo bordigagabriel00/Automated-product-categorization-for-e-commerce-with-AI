@@ -214,6 +214,21 @@ docs = ["sphinx"]
 test = ["pytest", "pytest-cov"]
 
 [[package]]
+name = "nats-py"
+version = "2.7.2"
+description = "NATS client for Python"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "nats-py-2.7.2.tar.gz", hash = "sha256:0c97b4a57bed0ef1ff9ae6c19bc115ec7ca8ede5ab3e001fd00a377056a547cf"},
+]
+
+[package.extras]
+aiohttp = ["aiohttp"]
+fast-parse = ["fast-mail-parser"]
+nkeys = ["nkeys"]
+
+[[package]]
 name = "nose"
 version = "1.3.7"
 description = "nose extends unittest to make testing easier"
@@ -428,4 +443,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "8031a0c82fa6b2d9adac4606e29e2c5cf3f10476dd99d8ce6284a3800a152f44"
+content-hash = "1039f1ce631794725376f8e89c955450b5e65ccd0cbcad51dd83ec1b40fe19b8"
