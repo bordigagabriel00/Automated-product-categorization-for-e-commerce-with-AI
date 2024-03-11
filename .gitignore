@@ -1,4 +1,4 @@
-.idea
+.idea**
 infra/scylladb/.idea
 src/webui/.idea
 src/webui/.env
