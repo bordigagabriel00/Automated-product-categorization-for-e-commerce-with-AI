@@ -30,19 +30,22 @@ async def init_options(option: ConfigProvider) -> None:
     option.set_config("app", "base_static_dir", BASE_STATIC_DIR)
 
 
-@app.on_event("startup")
-async def startup_event():
-    # Define environment
-    await init_options(environment)
-    # Define View, Routers
-    await setup.init(app)
-
+def show_api(app: fastapi.FastAPI) -> None:
     routes_list = []
     for route in app.routes:
         if hasattr(route, "methods") and hasattr(route, "path"):
             routes_list.append({"path": route.path, "methods": list(route.methods)})
             logging.info(f"API: '{route}'")
 
+
+@app.on_event("startup")
+async def startup_event():
+    # Define environment
+    await init_options(environment)
+    # Define View, Routers
+    await setup.init(app)
+    # Show api definitions
+    show_api(app)
 
 
 if __name__ == "__main__":
@@ -52,4 +55,7 @@ if __name__ == "__main__":
 """
 TODO: topic predict.request
 TODO: topic predict.response
+TODO: Docu
+TODO: Product
+TODO: Pipelina
 """

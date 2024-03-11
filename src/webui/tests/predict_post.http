@@ -4,7 +4,8 @@ Content-Type: application/json
 
 {
   "name": "Example Product",
-  "desc": "This is a sample description of the product.",
+  "description": "This is a sample description of the product.",
+  "price": "0.0",
   "type": "Gadget",
   "manufacturer": "Example Manufacturer"
 }

@@ -9,8 +9,8 @@ from api.simulator.model import PredictRequest
 predict_router = APIRouter()
 
 
-@predict_router.post(f"{config.settings.base_url}/predict", tags=['api'])
+@predict_router.post(f"{config.settings.base_url}predict", tags=['api'])
 async def send_predict(predict: PredictRequest):
-    logging.info(f"Predict request: '{str(predict.json())}'")
-    await nats.publish(topic_predict_request, str(predict.json().encode()))
+    logging.info(f"Predict request: '{predict}'")
+    await nats.publish(topic_predict_request, " Send Message from api predict")
     return {"message": "UP"}

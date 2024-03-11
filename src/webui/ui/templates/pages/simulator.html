@@ -111,11 +111,15 @@
         event.preventDefault(); // Prevent the form from submitting traditionally
         console.log("enter")
         const name = document.getElementById('name').value.trim();
+        console.log(name)
         const description = document.getElementById('description').value.trim();
+        console.log(description)
         const price = document.getElementById('price').value.trim();
+        console.log(price)
         const type = document.getElementById('type').value;
+        console.log(type)
         const manufacturer = document.getElementById('manufacturer').value;
-
+        console.log(manufacturer)
 
         if (!name || !description || !price || type === '' || manufacturer === '') {
             displayError("Please fill out all fields correctly.");
