@@ -2,8 +2,8 @@ import logging
 from nats.aio.client import Client as NATS
 import config
 
-topic_predict_request = "predict.request"
-topic_predict_response = "predict.response"
+topic_predict_request = "request.predict"
+topic_predict_response = "response.predict"
 topic_health = "health"
 
 

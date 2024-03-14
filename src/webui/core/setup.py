@@ -22,13 +22,6 @@ def config_router(app: FastAPI) -> None:
     return
 
 
-async def config_event_bus() -> None:
-    # Health Subscriber
-    await nats_provider.subscribe(topic_health, monitor_message_handler)
-
-    return
-
-
 def config_views(app: FastAPI) -> None:
     # Views
     app.include_router(main_router)
@@ -38,8 +31,6 @@ async def init(app: FastAPI) -> None:
     # Define Routers
     config_router(app)
 
-    # Define Event Bus
-    await config_event_bus()
 
     # Define View
     config_views(app)

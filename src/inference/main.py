@@ -33,6 +33,7 @@ def show_api(app: fastapi.FastAPI) -> None:
 
 @app.on_event("startup")
 async def startup_event():
+    logging.info("start configuration")
     # Define environment
     await init_options(environment)
 

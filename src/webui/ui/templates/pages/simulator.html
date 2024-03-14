@@ -1,161 +1,219 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="flex">
-    <div class="flex-none w-1/3  ">
-    </div>
-    <div class="grow  w-full ">
-        <div class=" relative flex flex-col justify-center  overflow-hidden">
-            <div class="   rounded-md lg:max-w-xl">
-                <h1 class="text-amber-50 block  text-2xl font-bold mb-2  text-center  ">Simulator</h1>
-                <h2 class="text-amber-500 block  text-sm font-bold mb-2  text-center  ">Predict category2</h2>
-                <form id="frmPredict">
-                    <div class="mb-4 pt-3">
-                        <label class="block  text-sm font-bold mb-2" for="name">
-                            Name
-                        </label>
-                        <input class=" appearance-none border rounded w-full py-1 px-1  leading-tight focus:outline-none focus:-outline "
-                               id="name" type="text" placeholder="">
-                    </div>
-                    <div class="pt-3">
-                        <label class="block  text-sm font-bold mb-2" for="description">
-                            Description
-                        </label>
-                        <textarea
-                                class=" appearance-none border rounded w-full py-1 px-1  mb-3 leading-tight focus:outline-none focus:-outline "
-                                id="description" placeholder=""></textarea>
-                    </div>
-                    <div class="pt-3">
-                        <label class="block  text-sm font-bold mb-2" for="price">
-                            Price
-                        </label>
-                        <input
-                                class=" appearance-none border rounded w-full py-1 px-1  leading-tight focus:outline-none focus:-outline "
-                                id="price" placeholder="0.0"></input>
-                    </div>
-                    <div class=" pt-3">
-                        <label class="block  text-sm font-bold mb-2" for="type">
-                            Type
-                        </label>
-                        <select class=" border rounded w-full py-1 px-1  mb-3 leading-tight focus:outline-none focus:-outline "
-                                id="type">
-                            <option value="tipo1">Tipo 1</option>
-                            <option value="tipo2">Tipo 2</option>
-                            <!-- Add more options as needed -->
-                        </select>
-                    </div>
-                    <div class=" pt-3">
-                        <label class="block  text-sm font-bold mb-2" for="manufacturer">
-                            Manufacturer
-                        </label>
-                        <select class=" border rounded w-full py-1 px-1  mb-3 leading-tight focus:outline-none focus:-outline "
-                                id="manufacturer">
-                            <option value="tipo1">Manufacturer 1</option>
-                            <option value="tipo2">Manufacturer 2</option>
-
-                        </select>
-                    </div>
-                    <div class="flex flex-row items-center justify-end p-3">
-                        <ul class="menu menu-horizontal bg-base-200 p-1">
-                            <li class="btn btn-neutral "><a href="javascript:void(0);" onclick="cleanForm()">Clean</a>
-                            </li>
-                            <button type="submit" class="btn btn-accent">Predict</button>
-                        </ul>
-
-                    </div>
-                </form>
-                <!-- Div donde se mostrará la respuesta -->
-                <div id="response"></div>
-                <!-- Div donde se mostrará el error-->
-
-
-                <dialog id="modal" class="modal bg-base-100 rounded-lg p-5">
-                    <div class="modal-box relative">
-                        <h3 class="font-bold text-lg p-3">Attention!</h3>
-                        <p class="p-6">Please fill out all fields correctly or try again.</p>
-                        <div class="modal-action flex justify-end p-3">
-                            <button class="btn  btn-active " onclick="document.getElementById('modal').close()">Close
-                            </button>
+    <div class="flex">
+        <div class="flex-none w-1/3  ">
+        </div>
+        <div class="grow  w-full ">
+            <div class=" relative flex flex-col justify-center  overflow-hidden">
+                <div class="   rounded-md lg:max-w-xl">
+                    <h1 class="text-amber-50 block  text-2xl font-bold mb-2  text-center  ">Simulator</h1>
+                    <h2 class="text-amber-500 block  text-sm font-bold mb-2  text-center  ">Predict category</h2>
+                    <form id="frmPredict">
+                        <div class="mb-4 pt-3">
+                            <label class="block  text-sm font-bold mb-2" for="name">
+                                Name
+                            </label>
+                            <input class=" appearance-none border rounded w-full py-1 px-1  leading-tight focus:outline-none focus:-outline "
+                                   id="name" type="text" placeholder="">
                         </div>
-                    </div>
-                </dialog>
+                        <div class="pt-3">
+                            <label class="block  text-sm font-bold mb-2" for="description">
+                                Description
+                            </label>
+                            <textarea
+                                    class=" appearance-none border rounded w-full py-1 px-1  mb-3 leading-tight focus:outline-none focus:-outline "
+                                    id="description" placeholder=""></textarea>
+                        </div>
+                        <div class="pt-3">
+                            <label class="block  text-sm font-bold mb-2" for="price">
+                                Price
+                            </label>
+                            <input
+                                    class=" appearance-none border rounded w-full py-1 px-1  leading-tight focus:outline-none focus:-outline "
+                                    id="price" placeholder="0.0"></input>
+                        </div>
+                        <div class=" pt-3">
+                            <label class="block  text-sm font-bold mb-2" for="type">
+                                Type
+                            </label>
+                            <select class=" border rounded w-full py-1 px-1  mb-3 leading-tight focus:outline-none focus:-outline "
+                                    id="type">
+                                <option value="tipo1">Tipo 1</option>
+                                <option value="tipo2">Tipo 2</option>
+                                <!-- Add more options as needed -->
+                            </select>
+                        </div>
+                        <div class=" pt-3">
+                            <label class="block  text-sm font-bold mb-2" for="manufacturer">
+                                Manufacturer
+                            </label>
+                            <select class=" border rounded w-full py-1 px-1  mb-3 leading-tight focus:outline-none focus:-outline "
+                                    id="manufacturer">
+                                <option value="tipo1">Manufacturer 1</option>
+                                <option value="tipo2">Manufacturer 2</option>
+
+                            </select>
+                        </div>
+                        <div class="flex flex-row items-center justify-end p-3">
+                            <ul class="menu menu-horizontal bg-base-200 p-1">
+                                <li class="btn btn-neutral "><a href="javascript:void(0);"
+                                                                onclick="cleanForm()">Clean</a>
+                                </li>
+                                <button type="submit" class="btn btn-accent">Predict</button>
+                            </ul>
+
+                        </div>
+                    </form>
+                    <!-- Div donde se mostrará la respuesta -->
+                    <div id="response"></div>
+                    <!-- Div donde se mostrará el error-->
+
+
+                    <dialog id="modal" class="modal bg-base-100 rounded-lg p-5">
+                        <div class="modal-box relative">
+                            <h3 class="font-bold text-lg p-3">Attention!</h3>
+                            <p class="p-6">Please fill out all fields correctly or try again.</p>
+                            <div class="modal-action flex justify-end p-3">
+                                <button class="btn  btn-active " onclick="document.getElementById('modal').close()">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </dialog>
+                </div>
             </div>
+
         </div>
 
+        {% include "partials/_footer.html" %}
+
     </div>
 
-    {% include "partials/_footer.html" %}
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const form = document.getElementById('frmPredict');
+            form.addEventListener('submit', predictForm);
+        });
 
-</div>
+        var ws;
+        const retryInterval = 2000; // Reconnect attempt every 2 seconds
+        const timeout = 5000; // Connection timeout of 5 seconds
+        let timeoutChecker;
 
-<script>
-    document.addEventListener('DOMContentLoaded', (event) => {
-        const form = document.getElementById('frmPredict');
-        form.addEventListener('submit', predictForm);
-    });
+        function connectWebSocket() {
+            ws = new WebSocket("ws://127.0.0.1:9000/ws");
 
-    function cleanForm() {
-        document.getElementById('name').value = '';
-        document.getElementById('description').value = '';
-        document.getElementById('price').value = '0.0';
-        document.getElementById('type').selectedIndex = 0;
-        document.getElementById('manufacturer').selectedIndex = 0;
-        // Remover mensaje de error si existe
-        const errorDiv = document.getElementById('error-message');
-        if (errorDiv) {
-            errorDiv.remove();
-        }
-    }
+            ws.onopen = function () {
+                clearTimeout(timeoutChecker); // Clear the timeout checker upon successful connection
+                console.log("WebSocket connection opened");
+            };
 
-    function predictForm(event) {
-        event.preventDefault(); // Prevent the form from submitting traditionally
-        console.log("enter")
-        const name = document.getElementById('name').value.trim();
-        console.log(name)
-        const description = document.getElementById('description').value.trim();
-        console.log(description)
-        const price = document.getElementById('price').value.trim();
-        console.log(price)
-        const type = document.getElementById('type').value;
-        console.log(type)
-        const manufacturer = document.getElementById('manufacturer').value;
-        console.log(manufacturer)
+            ws.onmessage = function (event) {
+                var message = event.data;
+                alert("Predict: " + message);
+            };
 
-        if (!name || !description || !price || type === '' || manufacturer === '') {
-            displayError("Please fill out all fields correctly.");
-            return;
-        }
-         console.log("enviando info")
-        const data = {name, description, price, type, manufacturer};
-        const jsonData = JSON.stringify(data);
-        console.log(jsonData)
-        fetch('api/v1/predict', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: jsonData
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+            ws.onerror = function (error) {
+                // Log WebSocket errors to the console
+                console.error("WebSocket connection error", error);
+            };
+
+            ws.onclose = function (event) {
+                // Attempt to reconnect after a delay when the connection closes
+                console.log("WebSocket connection closed. Attempting to reconnect...");
+                setTimeout(connectWebSocket, retryInterval);
+            };
+
+            // Set a timeout for the connection
+            timeoutChecker = setTimeout(function () {
+                // If the connection is not open by the timeout, close the WebSocket
+                if (ws.readyState !== WebSocket.OPEN) {
+                    console.log("WebSocket connection timed out. Closing...");
+                    ws.close();
                 }
-                return response.json();
-            })
-            .then(data => {
-                document.getElementById('response').innerHTML = JSON.stringify(data);
-                cleanForm(); // Opcional: limpiar formulario después del envío exitoso
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                displayError("Failed to predict. Please try again.");
-            });
-    }
+            }, timeout);
+        }
 
-    function displayError(message) {
 
-        document.getElementById('modal').showModal()
-    }
-</script>
+        function cleanForm() {
+            document.getElementById('name').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('price').value = '0.0';
+            document.getElementById('type').selectedIndex = 0;
+            document.getElementById('manufacturer').selectedIndex = 0;
+            // Remover mensaje de error si existe
+            const errorDiv = document.getElementById('error-message');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+        }
+
+        function predictForm(event) {
+
+            event.preventDefault(); // Prevent the form from submitting traditionally
+            const name = document.getElementById('name').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const price = document.getElementById('price').value.trim();
+            const type = document.getElementById('type').value;
+            const manufacturer = document.getElementById('manufacturer').value;
+
+            function sendMessage(json) {
+                console.log('activo socket')
+                if (ws.readyState === WebSocket.OPEN) {
+                    console.log('enviando socket')
+                    ws.send(json);
+
+                } else {
+                    // Alert the user if the WebSocket connection isn't open
+                    alert("WebSocket connection is not open. Please try again.");
+                }
+            }
+
+
+            if (!name || !description || !price || type === '' || manufacturer === '') {
+                displayError("Please fill out all fields correctly.");
+                return;
+            }
+            console.log("enviando info")
+            const data = {name, description, price, type, manufacturer};
+            const jsonData = JSON.stringify(data);
+            console.log(jsonData)
+
+            sendMessage(jsonData)
+            /*
+            fetch('api/v1/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: jsonData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('response').innerHTML = JSON.stringify(data);
+                    cleanForm(); // Opcional: limpiar formulario después del envío exitoso
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    displayError("Failed to predict. Please try again.");
+                });
+
+             */
+        }
+
+        function displayError(message) {
+
+            document.getElementById('modal').showModal()
+        }
+
+        // Initialize WebSocket connection when the page loads
+        connectWebSocket();
+    </script>
 
 {% endblock content %}

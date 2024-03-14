@@ -1,46 +1,47 @@
-import logging
 import json
-from api.simulator.model import PredictRequest
-from core.eventbus import nats_provider as nats, topic_predict_response
+import logging
 
-from nats.aio.client import Client as NATS
-from nats.js.api import JetStream, StorageType, KeyValueConfig, KeyValueStatus
-
+from core.eventbus import nats_provider
+from core.eventbus import topic_predict_response
 
 
 async def predict_request_handler(msg):
     data = json.loads(msg.data.decode())
     logging.info(f"Received subject request: {msg.subject} ")
-    logging.info(f"Received reply request: {msg.reply} ")
     logging.info(f"Received predict request: {data}")
 
-    js = JetStream(nats.nc)
-
-        # Create a KV
-    kv = await js.create_key_value(bucket='MY_KV')
-    
-        # Set and retrieve a value
-    await kv.put('hello', b'world')
-    entry = await kv.get('hello')
-    print(f'KeyValue.Entry: key={entry.key}, value={entry.value}')
-        # KeyValue.Entry: key=hello, value=world
-    
-
-
-
-
-
-
-    predict_response = {"predict_id": "2323", "data": ""}
-    # data = predict.data.decode()
-    # logging.info(f"Received predict data: {data}")
-
-    data_prediction = {"category": "test",
-                       "probability": "99.9"}
-    predict_response["data"] = json.dumps(data_prediction)
+    data_dummy = [
+        {
+            "category": "Electronics",
+            "subcategories": [
+                {
+                    "category": "Computers",
+                    "subcategories": [
+                        {
+                            "category": "Laptops",
+                            "subcategories": [
+                                {
+                                    "category": "Gaming",
+                                    "subcategories": [
+                                        {"category": "High-End", "level": "5"}
+                                    ]
+                                }]
+                        }, ]
+                }]
+        }
+    ]
     logging.info(f"Predict process")
+
+    predict_response = dict()
+    predict_response["prediction_id"] = data["id"]
+    predict_response["data"] = data_dummy
+    logging.info(f"Predict result: {predict_response}")
     try:
-        # await nats.publish(topic_predict_response, json.dumps(predict_response))
+
+        subject = topic_predict_response
+        message = json.dumps(predict_response)
+        await nats_provider.publish(subject, message)
+
         logging.info(f"Predict result: {predict_response} ")
     except Exception as e:
         logging.error(f"Predict request error: {e}")
