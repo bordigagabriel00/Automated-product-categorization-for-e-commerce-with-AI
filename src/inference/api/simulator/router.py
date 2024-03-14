@@ -3,8 +3,8 @@ import logging
 from fastapi import APIRouter
 
 import config
-from core.eventbus import nats_provider as nats, topic_predict_request
 from api.simulator.model import PredictRequest
+from core.eventbus import nats_provider as nats, topic_predict_request
 
 predict_router = APIRouter()
 

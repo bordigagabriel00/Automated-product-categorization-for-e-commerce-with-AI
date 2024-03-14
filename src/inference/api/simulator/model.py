@@ -1,6 +1,4 @@
-from pydantic import BaseModel, UUID4, Field
-from typing import Dict, Any
-from uuid import uuid4
+from pydantic import BaseModel
 
 
 class PredictRequest(BaseModel):
@@ -10,5 +8,3 @@ class PredictRequest(BaseModel):
     price: str
     type: str
     manufacturer: str
-
-

@@ -1,5 +1,7 @@
 import logging
+
 from nats.aio.client import Client as NATS
+
 import config
 
 topic_predict_request = "request.predict"
