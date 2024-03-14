@@ -1,53 +1,53 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="w-1/2 relative flex flex-col justify-center h-screen overflow-hidden">
-    <div class=" p-12 m-auto bg-white rounded-md -md lg:max-w-xl">
-        <h1 class="text-3xl font-semibold text-center text-purple-700">Predict category</h1>
-        <form class="bg-white  ">
-            <div class="mb-4">
-                <label class="block  text-sm font-bold mb-2" for="name">
-                    Name
-                </label>
-                <input class=" appearance-none border rounded w-full py-1 px-1  leading-tight focus:outline-none focus:-outline bg-white"
-                       id="name" type="text" placeholder="">
-            </div>
-            <div class="mb-4">
-                <label class="block  text-sm font-bold mb-2" for="description">
-                    Description
-                </label>
-                <textarea
-                        class=" appearance-none border rounded w-full py-1 px-1  mb-3 leading-tight focus:outline-none focus:-outline bg-white"
-                        id="description" placeholder=""></textarea>
-            </div>
-            <div class="mb-4">
-                <label class="block  text-sm font-bold mb-2" for="type">
-                    Type
-                </label>
-                <select class=" border rounded w-full py-1 px-1  mb-3 leading-tight focus:outline-none focus:-outline bg-white"
-                        id="type">
-                    <option value="tipo1">Tipo 1</option>
-                    <option value="tipo2">Tipo 2</option>
-                    <!-- Add more options as needed -->
-                </select>
-            </div>
-            <div class="flex items-center justify-end">
+    <div class="w-1/2 relative flex flex-col justify-center h-screen overflow-hidden">
+        <div class=" p-12 m-auto bg-white rounded-md -md lg:max-w-xl">
+            <h1 class="text-3xl font-semibold text-center text-purple-700">Predict category</h1>
+            <form class="bg-white  ">
+                <div class="mb-4">
+                    <label class="block  text-sm font-bold mb-2" for="name">
+                        Name
+                    </label>
+                    <input class=" appearance-none border rounded w-full py-1 px-1  leading-tight focus:outline-none focus:-outline bg-white"
+                           id="name" type="text" placeholder="">
+                </div>
+                <div class="mb-4">
+                    <label class="block  text-sm font-bold mb-2" for="description">
+                        Description
+                    </label>
+                    <textarea
+                            class=" appearance-none border rounded w-full py-1 px-1  mb-3 leading-tight focus:outline-none focus:-outline bg-white"
+                            id="description" placeholder=""></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block  text-sm font-bold mb-2" for="type">
+                        Type
+                    </label>
+                    <select class=" border rounded w-full py-1 px-1  mb-3 leading-tight focus:outline-none focus:-outline bg-white"
+                            id="type">
+                        <option value="tipo1">Tipo 1</option>
+                        <option value="tipo2">Tipo 2</option>
+                        <!-- Add more options as needed -->
+                    </select>
+                </div>
+                <div class="flex items-center justify-end">
 
-                <button class="btn btn-neutral">Clean</button>
-                <button class="btn btn-ghost">Predict</button>
+                    <button class="btn btn-neutral">Clean</button>
+                    <button class="btn btn-ghost">Predict</button>
 
-            </div>
-        </form>
+                </div>
+            </form>
+        </div>
+
+
+        <footer class="w-full text-white bg-gray-800 text-center p-4 absolute bottom-0">Equipo 5</footer>
     </div>
 
-
-    <footer class="w-full text-white bg-gray-800 text-center p-4 absolute bottom-0">Equipo 5</footer>
-</div>
-
-<script>
-    function limpiarFormulario() {
-        document.getElementById('nombre').value = '';
-        document.getElementById('descripcion').value = '';
-        document.getElementById('tipo').selectedIndex = 0;
-    }
-</script>
+    <script>
+        function limpiarFormulario() {
+            document.getElementById('nombre').value = '';
+            document.getElementById('descripcion').value = '';
+            document.getElementById('tipo').selectedIndex = 0;
+        }
+    </script>
 {% endblock content %}

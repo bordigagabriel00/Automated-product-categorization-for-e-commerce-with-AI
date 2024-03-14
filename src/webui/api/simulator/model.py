@@ -1,6 +1,8 @@
-from pydantic import BaseModel, UUID4, Field
 from typing import Dict, Any
 from uuid import uuid4
+
+from pydantic import BaseModel, UUID4, Field
+
 
 class PredictRequest(BaseModel):
     name: str
@@ -10,9 +12,6 @@ class PredictRequest(BaseModel):
     manufacturer: str
 
 
-
 class RequestModel(BaseModel):
     id: UUID4 = Field(default_factory=uuid4)
     payload: Dict[str, Any]
-
-

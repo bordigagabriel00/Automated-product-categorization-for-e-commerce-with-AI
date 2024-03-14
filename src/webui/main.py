@@ -55,7 +55,6 @@ async def websocket_endpoint(websocket: WebSocket):
         data = await websocket.receive_text()
         request = json.loads(data)
 
-        # Crear una instancia del modelo con datos de ejemplo
         request_instance = RequestModel(payload=request)
         json_request = request_instance.model_dump_json()
 
@@ -82,9 +81,5 @@ if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", reload=True)
 
 """
-TODO: topic predict.request
-TODO: topic predict.response
-TODO: Docu
-TODO: Product
-TODO: Pipelina
+
 """

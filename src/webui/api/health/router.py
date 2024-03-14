@@ -1,6 +1,5 @@
 from fastapi import APIRouter
-
-from api.monitor.consumer import topic_health
+from core.eventbus import  topic_health
 from core.eventbus import nats_provider as nats
 
 health_router = APIRouter()
