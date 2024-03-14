@@ -1,6 +1,7 @@
 import json
 import logging
 
+from api.simulator.model import ResponsePrediction
 from core.eventbus import nats_provider
 from core.eventbus import topic_predict_response
 
@@ -32,16 +33,14 @@ async def predict_request_handler(msg):
     ]
     logging.info(f"Predict process")
 
-    predict_response = dict()
-    predict_response["prediction_id"] = data["id"]
-    predict_response["data"] = data_dummy
-    logging.info(f"Predict result: {predict_response}")
+    resp_prediction = ResponsePrediction(id=data["id"], payload=json.dumps(data_dummy))
+    logging.info(f"Predict result: {resp_prediction}")
     try:
 
         subject = topic_predict_response
-        message = json.dumps(predict_response)
+        message = resp_prediction.model_dump_json()
         await nats_provider.publish(subject, message)
 
-        logging.info(f"Predict result: {predict_response} ")
+        logging.info(f"Predict result: {resp_prediction} ")
     except Exception as e:
         logging.error(f"Predict request error: {e}")

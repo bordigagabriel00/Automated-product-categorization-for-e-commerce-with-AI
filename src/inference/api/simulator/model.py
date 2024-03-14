@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, UUID4
 
 
 class PredictRequest(BaseModel):
@@ -8,3 +8,8 @@ class PredictRequest(BaseModel):
     price: str
     type: str
     manufacturer: str
+
+
+class ResponsePrediction(BaseModel):
+    id: UUID4
+    payload: str

@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 
 from api.health.router import health_router
-from api.monitor.consumer import topic_health, monitor_message_handler
+from api.monitor.consumer import  monitor_message_handler
 from api.simulator.consumer import predict_request_handler
-from core.eventbus import nats_provider, topic_predict_request
+from core.eventbus import nats_provider, topic_predict_request, topic_health
 
 
 def config_router(app: FastAPI) -> None:
