@@ -1,5 +1,6 @@
 from arango import ArangoClient
 
+
 def check_arango_connection():
 
     # Initialize the ArangoDB client

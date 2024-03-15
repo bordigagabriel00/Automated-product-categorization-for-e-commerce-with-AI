@@ -2,6 +2,8 @@ import json
 import logging
 import pathlib
 
+from typing import Any
+
 import fastapi.applications
 import nats
 import uvicorn
@@ -10,13 +12,18 @@ from fastapi.staticfiles import StaticFiles
 
 from api.simulator.model import RequestModel
 from config import settings
+from core import api_provider
 from core import setup
+from core.arangodb_provider import ArangoDBConnection
 from core.environment import ConfigProvider
+from core.type_provider import create_product_type
 
 # Define the app at the module level
 app: fastapi.applications.FastAPI = FastAPI(title=settings.app_name,
                                             description=settings.description,
                                             version=settings.app_version)
+# Define db connection
+db_connection = Any
 
 # Define static section
 BASE_STATIC_DIR = pathlib.Path(__file__).parent / 'ui' / 'static'
@@ -31,14 +38,6 @@ async def init_options(option: ConfigProvider) -> None:
     option.set_config("app", "description", settings.description)
     option.set_config("app", "version", settings.app_version)
     option.set_config("app", "base_static_dir", BASE_STATIC_DIR)
-
-
-def show_api(app: fastapi.FastAPI) -> None:
-    routes_list = []
-    for route in app.routes:
-        if hasattr(route, "methods") and hasattr(route, "path"):
-            routes_list.append({"path": route.path, "methods": list(route.methods)})
-            logging.info(f"API: '{route}'")
 
 
 @app.websocket("/ws")
@@ -68,18 +67,36 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @app.on_event("startup")
 async def startup_event():
+
+    global db_connection
+
     # Define environment
     await init_options(environment)
     # Define View, Routers
     await setup.init(app)
     # Show api definitions
-    show_api(app)
+    api_provider.show(app)
+
+    # Verify connection
+    try:
+        db_connection = ArangoDBConnection.get_instance(settings.arango_url, settings.username, settings.password,
+                                                        settings.name_system_db)
+
+        if db_connection.verify_connection():
+            logging.info("DB: The ArangoDB connection is active and verified.")
+        else:
+            logging.error("DB: The ArangoDB connection could not be verified.")
+    except Exception as e:
+        logging.error(f"Failed to initialize ArangoDB connection: {e}")
+
+    if not create_product_type():
+        logging.error("EError initializing the product type")
+
+    collections = db_connection.db.collections()
+    logging.info("Successfully connected to ArangoDB!")
+    logging.info(collections)
 
 
 if __name__ == "__main__":
     # the port is defined by command
     uvicorn.run("main:app", host="0.0.0.0", reload=True)
-
-"""
-
-"""
