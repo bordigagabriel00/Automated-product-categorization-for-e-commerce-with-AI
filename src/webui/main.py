@@ -1,13 +1,13 @@
 import json
 import logging
 import pathlib
-
 from typing import Any
 
 import fastapi.applications
 import nats
 import uvicorn
 from fastapi import FastAPI, WebSocket
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from api.simulator.model import RequestModel
@@ -18,10 +18,23 @@ from core.arangodb_provider import ArangoDBConnection
 from core.environment import ConfigProvider
 from core.type_provider import create_product_type
 
+origins = [
+    "*",
+]
+
 # Define the app at the module level
 app: fastapi.applications.FastAPI = FastAPI(title=settings.app_name,
                                             description=settings.description,
                                             version=settings.app_version)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Permite todos los orígenes
+    allow_credentials=True,  # Permite cookies
+    allow_methods=["*"],  # Permite todos los métodos
+    allow_headers=["*"],  # Permite todos los encabezados
+)
+
 # Define db connection
 db_connection = Any
 
@@ -67,7 +80,6 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @app.on_event("startup")
 async def startup_event():
-
     global db_connection
 
     # Define environment
