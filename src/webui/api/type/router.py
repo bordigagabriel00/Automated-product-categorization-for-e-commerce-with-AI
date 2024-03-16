@@ -11,7 +11,7 @@ type_router = APIRouter(tags=['api'], prefix=f"{settings.base_url}/type")
 async def type_search(q: str = Query(default=None)):
     if q is None:
         return HTMLResponse(
-            content="<div id='results'><div class='p-2'>Por favor, ingresa un término de búsqueda.</div></div>",
+            content="<div id='results'><div class='p-2'>Without criteria</div></div>",
             status_code=200)
 
     query = f"FOR doc IN types FILTER LIKE(doc.name, '%{q}%', true) RETURN doc"
