@@ -16,7 +16,7 @@ from core import api_provider
 from core import setup
 from core.arangodb_provider import ArangoDBConnection
 from core.environment import ConfigProvider
-from core.type_provider import create_product_type
+
 
 origins = [
     "*",
@@ -101,9 +101,6 @@ async def startup_event():
     except Exception as e:
         logging.error(f"Failed to initialize ArangoDB connection: {e}")
 
-    if not create_product_type():
-        logging.error("EError initializing the product type")
-
     collections = db_connection.db.collections()
     logging.info("Successfully connected to ArangoDB!")
     logging.info(collections)
@@ -112,3 +109,11 @@ async def startup_event():
 if __name__ == "__main__":
     # the port is defined by command
     uvicorn.run("main:app", host="0.0.0.0", reload=True)
+
+"""
+TODO: Nove Type
+TODO: Manufacturer
+TODO: Pipeline
+TODO: Predict
+TODO: Products
+"""
