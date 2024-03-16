@@ -4,6 +4,7 @@ from api.type.router import type_router
 from api.health.router import health_router
 from api.product.router import product_router
 from core.views_router import main_router
+from api.manufacturer.router import manufacturer_router
 
 
 def config_router(app: FastAPI) -> None:
@@ -13,6 +14,8 @@ def config_router(app: FastAPI) -> None:
     app.include_router(product_router)
     #  Type definitions
     app.include_router(type_router)
+    #  Manufacturer definitions
+    app.include_router(manufacturer_router)
 
     return
 
