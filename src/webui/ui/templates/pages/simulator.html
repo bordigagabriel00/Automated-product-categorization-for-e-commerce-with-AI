@@ -60,7 +60,8 @@
                                    name="q"
                                    class="appearance-none border rounded w-full py-1 px-1 leading-tight focus:outline-none focus:-outline "
                                    placeholder="Start typing..." size="50"
-                                   autocomplete="off" hx-get="/api/v1/type/search/"
+                                   autocomplete="off"
+                                   hx-get="/api/v1/manufacturer/search/"
                                    hx-trigger="keyup changed delay:500ms"
                                    hx-target="#manufacturer-response-container"
                                    hx-include="#manufacturer-input">
@@ -183,8 +184,8 @@
             document.getElementById('name').value = '';
             document.getElementById('description').value = '';
             document.getElementById('price').value = '0.0';
-            document.getElementById('type').selectedIndex = 0;
-            document.getElementById('manufacturer').selectedIndex = 0;
+            document.getElementById('type-input').value = '';
+            document.getElementById('manufacturer-input').value = '';
             // Remover mensaje de error si existe
             const errorDiv = document.getElementById('error-message');
             if (errorDiv) {
@@ -201,8 +202,8 @@
             const name = document.getElementById('name').value.trim();
             const description = document.getElementById('description').value.trim();
             const price = document.getElementById('price').value.trim();
-            const type = document.getElementById('type').value;
-            const manufacturer = document.getElementById('manufacturer').value;
+            const type = document.getElementById('type-input').value;
+            const manufacturer = document.getElementById('manufacturer-input').value;
 
             function sendMessage(json) {
                 console.log('activo socket')
