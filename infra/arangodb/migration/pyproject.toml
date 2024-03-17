@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "migration"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pydantic = "^2.6.4"
+python-arango = "^7.9.1"
+pandas = "^2.2.1"
+pydantic-settings = "^2.2.1"
+aiohttp = "^3.9.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

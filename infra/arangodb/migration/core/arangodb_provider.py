@@ -1,41 +1,42 @@
 import logging
-from typing import Optional
-
-from arango import ArangoClient
+from typing import Dict, Optional
+from arango import ArangoClient, ArangoError
 
 
 class ArangoDBConnection:
-    _instance: Optional['ArangoDBConnection'] = None
+    _instances: Dict[str, 'ArangoDBConnection'] = {}
 
     def __init__(self, hosts: str, username: str, password: str, database: str):
-        if ArangoDBConnection._instance is not None:
-            raise Exception("DB: This class is a singleton and has already been instantiated!")
-        else:
-            self.client = ArangoClient(hosts=hosts)
+        self.client = ArangoClient(hosts=hosts)
+        self._db_name = database
+        try:
             self.db = self.client.db(database, username=username, password=password)
-            ArangoDBConnection._instance = self
+            logging.info("DB: Successfully connected to the database.")
+        except ArangoError as e:
+            logging.error(f"DB: Failed to connect to the database: {e}")
+            raise
 
     @classmethod
-    def get_instance(cls, hosts: str = "", username: str = "", password: str = "",
-                     database: str = "") -> 'ArangoDBConnection':
-        if cls._instance is None:
+    def get_instance(cls, hosts: str, username: str, password: str, database: str) -> 'ArangoDBConnection':
+
+        instance_key = f"{hosts}-{username}-{database}"
+
+        if instance_key not in cls._instances:
             if not all([hosts, username, password, database]):
                 raise ValueError("DB: All connection details must be provided for the first initialization!")
-            cls(hosts, username, password, database)
-        return cls._instance
+            cls._instances[instance_key] = cls(hosts, username, password, database)
+
+        return cls._instances[instance_key]
 
     def get_connection(self):
         return self.db
 
     def verify_connection(self) -> bool:
         try:
-            # Attempt to list databases as a connection check
-            self.client.db()
+            # This effectively checks if the specific database is accessible
+            self.db.collections()
             logging.info("DB: Connection to ArangoDB is successful.")
             return True
-        except Exception as e:
-            logging.error(f"DB: Error connecting to ArangoDB: {e}")
+        except ArangoError as e:
+            logging.error(f"DB: Error verifying connection to ArangoDB: {e}")
             return False
-
-
-
