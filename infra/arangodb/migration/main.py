@@ -8,9 +8,11 @@ import aiohttp
 
 from config import settings
 from core.arangodb_provider import ArangoDBConnection
+from core.category_provider import init_category_type
 from core.db_provider import init_database, DB_NAME
 from core.manufacturer_provider import init_manufacturer_type
 from core.type_provider import init_product_type
+from core.product_provider import init_product
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -77,7 +79,9 @@ async def main():
     # Initialize collections
     tasks = [
         asyncio.create_task(init_product_type(response, model_db)),
-        asyncio.create_task(init_manufacturer_type(response, model_db))
+        asyncio.create_task(init_manufacturer_type(response, model_db)),
+        asyncio.create_task(init_category_type(response, model_db)),
+        asyncio.create_task(init_product(response, model_db))
     ]
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -85,14 +89,7 @@ async def main():
     if any(not result for result in results):
         sys.exit("Error initializing collections")
 
-
 if __name__ == "__main__":
     asyncio.run(main())
 
-"""
-TODO: Nove Type
-TODO: Manufacturer
-TODO: Pipeline
-TODO: Predict
-TODO: Products
-"""
+
