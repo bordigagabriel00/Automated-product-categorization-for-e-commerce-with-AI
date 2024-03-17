@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     nats_url: str = "nats://localhost:4222"
     arango_url: str = "http://localhost:8529"
     name_system_db: str = "_system"
+    product_model_db: str = "Product_Model"
     username: str = "root"
     password: str ="rootpassword"
     csv_file: str = "products.csv"

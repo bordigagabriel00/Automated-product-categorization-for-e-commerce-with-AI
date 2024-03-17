@@ -91,8 +91,10 @@ async def startup_event():
 
     # Verify connection
     try:
-        db_connection = ArangoDBConnection.get_instance(settings.arango_url, settings.username, settings.password,
-                                                        settings.name_system_db)
+        db_connection = ArangoDBConnection.get_instance(settings.arango_url,
+                                                        settings.username,
+                                                        settings.password,
+                                                        settings.product_model_db)
 
         if db_connection.verify_connection():
             logging.info("DB: The ArangoDB connection is active and verified.")

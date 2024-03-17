@@ -1,0 +1,3 @@
+# Manufacturer
+GET http://localhost:9000/api/v1/manufacturer/search/?q=a
+Content-Type: application/json

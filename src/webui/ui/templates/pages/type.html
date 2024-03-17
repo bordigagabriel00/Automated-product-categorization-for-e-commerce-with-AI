@@ -37,17 +37,17 @@
 
         document.body.addEventListener('htmx:afterSwap', function (event) {
             if (event.target.id === 'response-container') {
-                const datalist = document.getElementById('type-data');
+                const datalist = document.getElementById('product_type-data');
                 datalist.innerHTML = event.target.innerHTML;
                 event.target.innerHTML = '';
             }
         });
     });
 
-    const typeInput = document.getElementById('type-input');
+    const typeInput = document.getElementById('product_type-input');
     typeInput.addEventListener('input', (event) => {
         const value = event.target.value;
-        const options = document.querySelectorAll('#type-data option');
+        const options = document.querySelectorAll('#product_type-data option');
         const matchingOption = Array.from(options).find(option => option.value === value);
         if (matchingOption) {
             // Actualizar el input con el valor seleccionado si coincide con una opción

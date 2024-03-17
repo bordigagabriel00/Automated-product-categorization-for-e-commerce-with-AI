@@ -50,7 +50,7 @@
                             <div id="type-response-container" style="display: none;"></div>
 
                         </div>
-                         <div class=" pt-3">
+                        <div class=" pt-3">
                             <label class="block  text-sm font-bold mb-2" for="manufacturer-input">
                                 Manufacturer
                             </label>
@@ -62,7 +62,7 @@
                                    placeholder="Start typing..." size="50"
                                    autocomplete="off"
                                    hx-get="/api/v1/manufacturer/search/"
-                                   hx-trigger="keyup changed delay:500ms"
+                                   hx-trigger="keyup changed delay:500ms,keyup[target.value.length > 2]"
                                    hx-target="#manufacturer-response-container"
                                    hx-include="#manufacturer-input">
                             <datalist id="manufacturer-data"> <!-- Las opciones se llenarán aquí por JavaScript -->
@@ -114,26 +114,28 @@
             form.addEventListener('submit', predictForm);
 
             document.body.addEventListener('htmx:afterSwap', function (event) {
-                  console.log('Start htmxSwap')
+                console.log('Start htmxSwap')
 
                 if (event.target.id === 'type-response-container') {
                     const datalist = document.getElementById('type-data');
-                     console.log('type-data')
+                    console.log('type-data')
 
                     datalist.innerHTML = event.target.innerHTML;
-                      console.log(event.target.innerHTML)
+                    console.log(event.target.innerHTML)
                     event.target.innerHTML = '';
                 }
 
-                 if (event.target.id === 'manufacturer-response-container') {
+                if (event.target.id === 'manufacturer-response-container') {
                     const datalist = document.getElementById('manufacturer-data');
-                     console.log('manufacturer-data')
+                    console.log('manufacturer-data')
 
                     datalist.innerHTML = event.target.innerHTML;
-                      console.log(event.target.innerHTML)
+                    console.log(event.target.innerHTML)
                     event.target.innerHTML = '';
                 }
             });
+
+            connectWebSocket();
 
         });
 
@@ -228,34 +230,11 @@
             console.log(jsonData)
 
             sendMessage(jsonData)
-            /*
-            fetch('api/v1/predict', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: jsonData
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    document.getElementById('response').innerHTML = JSON.stringify(data);
-                    cleanForm(); // Opcional: limpiar formulario después del envío exitoso
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    displayError("Failed to predict. Please try again.");
-                });
 
-             */
         }
 
         function displayError(message) {
-
+            console.log(message)
             document.getElementById('modal').showModal()
         }
 

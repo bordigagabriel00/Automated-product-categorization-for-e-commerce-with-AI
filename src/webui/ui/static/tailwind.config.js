@@ -1,4 +1,4 @@
-/** @type {import('tailwindcss').Config} */
+/** @product_type {import('tailwindcss').Config} */
 module.exports = {
     content: [
         "../templates/**/*.{html,js}",

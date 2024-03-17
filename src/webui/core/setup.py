@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from api.type.router import type_router
+from api.product_type.router import product_type_router
 from api.health.router import health_router
 from api.product.router import product_router
 from core.views_router import main_router
@@ -13,7 +13,7 @@ def config_router(app: FastAPI) -> None:
     # Router definitions
     app.include_router(product_router)
     #  Type definitions
-    app.include_router(type_router)
+    app.include_router(product_type_router)
     #  Manufacturer definitions
     app.include_router(manufacturer_router)
 
