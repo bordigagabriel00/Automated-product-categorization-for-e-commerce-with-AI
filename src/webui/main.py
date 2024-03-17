@@ -113,9 +113,8 @@ if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", reload=True)
 
 """
-TODO: Nove Type
-TODO: Manufacturer
-TODO: Pipeline
 TODO: Predict
-TODO: Products
+TODO: DockerFile
+TODO: test
+TODO: 
 """
