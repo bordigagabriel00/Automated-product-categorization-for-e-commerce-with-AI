@@ -4,3 +4,5 @@ src/webui/.idea
 src/webui/.env
 src/webui/ui/static/node_modules
 **/__pycache__/
+src/inference/poetry.lock
+src/webui/poetry.lock
