@@ -1,6 +1,7 @@
 import logging
-from fastapi import FastAPI
+
 import uvicorn
+from fastapi import FastAPI
 
 # Local imports
 from config import settings
@@ -55,6 +56,7 @@ async def startup_event():
     - Logging API routes
     - Initializing NLP components
     """
+
     logging.info("Starting application setup.")
 
     # Initialize application options

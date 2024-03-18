@@ -13,6 +13,9 @@ pydantic = "^2.6.2"
 pydantic-settings = "^2.2.1"
 nats-py = "^2.7.2"
 asyncio = "^3.4.3"
+nltk = "^3.8.1"
+pandas = "^2.2.1"
+tensorflow = "^2.16.1"
 
 
 [build-system]
