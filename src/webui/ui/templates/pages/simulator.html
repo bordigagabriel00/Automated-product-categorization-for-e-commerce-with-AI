@@ -208,7 +208,7 @@
             const name = document.getElementById('name').value.trim();
             const description = document.getElementById('description').value.trim();
             const price = document.getElementById('price').value.trim();
-            const type = document.getElementById('type-input').value;
+            const product_type = document.getElementById('type-input').value;
             const manufacturer = document.getElementById('manufacturer-input').value;
 
             function sendMessage(json) {
@@ -224,12 +224,12 @@
             }
 
 
-            if (!name || !description || !price || type === '' || manufacturer === '') {
+            if (!name || !description || !price || product_type === '' || manufacturer === '') {
                 displayError("Please fill out all fields correctly.");
                 return;
             }
             console.log("enviando info")
-            const data = {name, description, price, type, manufacturer};
+            const data = {name, description, price, product_type, manufacturer};
             const jsonData = JSON.stringify(data);
             console.log(jsonData)
 

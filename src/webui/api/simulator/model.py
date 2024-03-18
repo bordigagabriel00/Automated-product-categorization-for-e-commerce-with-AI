@@ -8,7 +8,7 @@ class PredictionRequest(BaseModel):
     name: str
     description: str
     price: str
-    type: str
+    product_type: str
     manufacturer: str
 
 
