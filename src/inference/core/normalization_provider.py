@@ -13,9 +13,7 @@ stop_words = None
 lemmatizer: WordNetLemmatizer
 
 
-
-
-def init_normalization():
+async def init_normalization():
     """
     Initializes the normalization process by downloading necessary NLTK resources
     and setting up stopwords and lemmatizer.

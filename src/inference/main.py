@@ -6,6 +6,7 @@ from fastapi import FastAPI
 # Local imports
 from config import settings
 from core import setup
+from core.bert_model_provider import init_load_bert_model
 from core.environment import ConfigProvider
 from core.normalization_provider import init_normalization
 
@@ -69,8 +70,15 @@ async def startup_event():
     show_api(app)
 
     # Initialize NLP components
-    init_normalization()
+    await init_normalization()
     logging.info("Application setup completed.")
+
+    # Initialize BERT model
+    tokenizer, model = await init_load_bert_model()
+    if tokenizer is not None and model is not None:
+        logging.info("Tokenizer and model are ready to use")
+    else:
+        logging.error("Failed to load tokenizer and model")
 
 
 if __name__ == "__main__":

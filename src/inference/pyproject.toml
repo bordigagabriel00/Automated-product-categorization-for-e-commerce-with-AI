@@ -16,6 +16,8 @@ asyncio = "^3.4.3"
 nltk = "^3.8.1"
 pandas = "^2.2.1"
 tensorflow = "^2.16.1"
+transformers = "^4.38.2"
+tf-keras = "^2.16.0"
 
 
 [build-system]

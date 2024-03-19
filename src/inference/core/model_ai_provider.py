@@ -1,14 +1,17 @@
-from typing import Dict
+import asyncio
+import logging
+import os
+from typing import Dict, Optional
 
 from tensorflow.keras.models import load_model
 
 # Define the paths to your models here
 model_paths = {
-    "model1": "assets/models/model_1_preberttune.h5",
-    "model2": "assets/models/model_2_preberttune.h5",
-    "model3": "assets/models/model_3_preberttune.h5",
-    "model4": "assets/models/model_4_preberttune.h5",
-    "model5": "assets/models/model_5_preberttune.h5",
+    "model1": "/assets/model/model_1_preberttune.h5",
+    "model2": "/assets/model/model_2_preberttune.h5",
+    "model3": "/assets/model/model_3_preberttune.h5",
+    "model4": "/assets/model/model_4_preberttune.h5",
+    "model5": "/assets/model/model_5_preberttune.h5",
 }
 
 
@@ -25,34 +28,37 @@ class SingletonMeta(type):
 
 
 class ModelManager(metaclass=SingletonMeta):
-    def __init__(self, model_path: Dict[str, str] = None):
+    def __init__(self, model_path: Dict[str, str], base_path: str = ""):
         """
-        Initializes the ModelManager with a dictionary of model keys and their file paths.
-        If the ModelManager has already been instantiated, it skips re-initialization.
+        Initializes the ModelManager with a dictionary of model keys and their file paths,
+        and optionally a base path that is prepended to each model path.
 
         Args:
-            model_path (Dict[str, str], optional): A dictionary where keys are model identifiers and values are file paths to the models.
+            model_path (Dict[str, str]): A dictionary where keys are model identifiers and values are file paths to the models.
+            base_path (str, optional): Base path to prepend to each model path.
         """
-        if not hasattr(self, 'models'):  # Check if the instance is already initialized
+        if not hasattr(self, 'models'):
             self.models = {}
-            if model_path:
-                self.load_models(model_path)
+            self.base_path = base_path
+            self.load_models(model_path)
 
     def load_models(self, model_path: Dict[str, str]) -> None:
         """
-        Loads models based on the provided dictionary of model paths.
+        Synchronously loads models based on the provided dictionary of model paths.
 
         Args:
             model_path (Dict[str, str]): A dictionary where keys are model identifiers and values are file paths to the models.
         """
         for key, path in model_path.items():
+            full_path = f"{self.base_path}{path}"
+            logging.info(f"Loading model {key} from full path: {full_path}.")
             try:
-                self.models[key] = load_model(path)
-                print(f"Model {key} loaded successfully.")
+                self.models[key] = load_model(full_path)
+                logging.info(f"Model {key} loaded successfully from {path}.")
             except Exception as e:
-                print(f"Failed to load model {key}: {e}")
+                logging.error(f"Failed to load model {key} from Full path: {full_path}")
 
-    def get_model(self, key: str):
+    def get_model(self, key: str) -> Optional[Dict]:
         """
         Retrieves a model based on its key.
 
@@ -65,5 +71,6 @@ class ModelManager(metaclass=SingletonMeta):
         return self.models.get(key, None)
 
 
-# Initialize the ModelManager with the model paths
-model_provider = ModelManager(model_paths)
+file_path = os.getcwd()
+
+model_provider = ModelManager(model_paths, file_path)
