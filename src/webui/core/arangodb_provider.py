@@ -1,4 +1,3 @@
-import logging
 from typing import Optional
 
 from arango import ArangoClient
@@ -31,11 +30,8 @@ class ArangoDBConnection:
         try:
             # Attempt to list databases as a connection check
             self.client.db()
-            logging.info("DB: Connection to ArangoDB is successful.")
+            logger.info("DB: Connection to ArangoDB is successful.")
             return True
         except Exception as e:
-            logging.error(f"DB: Error connecting to ArangoDB: {e}")
+            logger.error(f"DB: Error connecting to ArangoDB: {e}")
             return False
-
-
-

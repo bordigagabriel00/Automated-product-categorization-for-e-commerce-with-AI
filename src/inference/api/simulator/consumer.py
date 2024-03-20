@@ -1,11 +1,11 @@
 import json
-import logging
 from typing import Any
 
-from api.simulator.model import ResponsePrediction, PredictRequest
+from api.simulator.model import PredictRequest
 from core.eventbus import nats_provider
 from core.eventbus import topic_predict_response
-from core.model_ai_provider import model_provider
+from core.inference_service import predict_with_models
+from core.logger_provider import logger
 from core.normalization_provider import normalize_text
 
 
@@ -27,10 +27,10 @@ def init_prediction_request(data: Any) -> PredictRequest:
 
 
 async def predict_request_handler(msg):
-    logging.info(f"Predict: Starting process")
+    logger.info(f"Predict: Starting process")
     data = json.loads(msg.data.decode())
-    logging.info(f"Predict: Received subject request: {msg.subject} ")
-    logging.info(f"Predict: Received predict request: {data}")
+    logger.info(f"Predict: Received subject request: {msg.subject} ")
+    logger.info(f"Predict: Received predict request: {data}")
 
     categories = ["Category 1", "Category 2", "Category 3", "Category 4", "Category 5"]
     payload = {
@@ -39,25 +39,17 @@ async def predict_request_handler(msg):
 
     }
 
-    model_1 = model_provider.get_model("model1")
-    if model_1:
-        logging.info("Model 1 loaded and ready for use.")
-    else:
-        logging.error("Model 1 could not be loaded.")
+    resp_prediction = predict_with_models(payload)
 
-    # pred_request = init_prediction_request(data)
-    # text_field_normalize(pred_request)
+    logger.info(f"Predict: Ending process")
 
-    logging.info(f"Predict: Ending process")
-
-    resp_prediction = ResponsePrediction(id=data["id"], payload=json.dumps(payload))
-    logging.info(f"Predict result: {resp_prediction}")
+    logger.info(f"Predict result: {resp_prediction}")
     try:
 
         subject = topic_predict_response
         message = resp_prediction.model_dump_json()
         await nats_provider.publish(subject, message)
 
-        logging.info(f"Predict result: {resp_prediction} ")
+        logger.info(f"Predict result: {resp_prediction} ")
     except Exception as e:
-        logging.error(f"Predict request error: {e}")
+        logger.error(f"Predict request error: {e}")

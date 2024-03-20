@@ -6,7 +6,7 @@
         </div>
         <div class="grow  w-full ">
             <div class=" relative flex flex-col justify-center  overflow-hidden">
-                <div class="   rounded-md lg:max-w-xl">
+                <div class="rounded-md lg:max-w-xl ">
                     <h1 class="text-amber-50 block  text-2xl font-bold mb-2  text-center  ">Simulator</h1>
                     <h2 class="text-amber-500 block  text-sm font-bold mb-2  text-center  ">Predict category</h2>
                     <form id="frmPredict">
@@ -35,7 +35,7 @@
                                     type="number"
                                     step="any"
                                     min="0"
-                                    placeholder="0.0" />
+                                    placeholder="0.0"/>
                         </div>
                         <div class=" pt-3">
                             <label class="block  text-sm font-bold mb-2" for="type-input">
@@ -87,8 +87,7 @@
                         </div>
                     </form>
                     <!-- Div donde se mostrará la respuesta -->
-                    <div id="response"></div>
-                    <!-- Div donde se mostrará el error-->
+                    <div id="response" class="text-sm font-bold mb-1 w-full"></div>
 
 
                     <dialog id="modal" class="modal bg-base-100 rounded-lg p-5">
@@ -107,76 +106,86 @@
 
         </div>
 
-        {% include "partials/_footer.html" %}
 
     </div>
 
     <script>
+        // This script handles form submission, WebSocket connection for live prediction,
+        // and dynamically updates the UI with prediction results.
+
         document.addEventListener('DOMContentLoaded', (event) => {
-            console.log('Start')
+            console.log('Initialization');
             const form = document.getElementById('frmPredict');
             form.addEventListener('submit', predictForm);
 
+            // Handle dynamic updates from htmx responses
             document.body.addEventListener('htmx:afterSwap', function (event) {
-                console.log('Start htmxSwap')
-
                 if (event.target.id === 'type-response-container') {
                     const datalist = document.getElementById('type-data');
-                    console.log('type-data')
-
                     datalist.innerHTML = event.target.innerHTML;
-                    console.log(event.target.innerHTML)
                     event.target.innerHTML = '';
                 }
 
                 if (event.target.id === 'manufacturer-response-container') {
                     const datalist = document.getElementById('manufacturer-data');
-                    console.log('manufacturer-data')
-
                     datalist.innerHTML = event.target.innerHTML;
-                    console.log(event.target.innerHTML)
                     event.target.innerHTML = '';
                 }
             });
 
             connectWebSocket();
-
         });
 
-
-        var ws;
+        let ws;
         const retryInterval = 2000; // Reconnect attempt every 2 seconds
         const timeout = 5000; // Connection timeout of 5 seconds
         let timeoutChecker;
 
+        // Establishes WebSocket connection for live prediction results.
         function connectWebSocket() {
             if (!ws || ws.readyState === WebSocket.CLOSED) {
                 ws = new WebSocket("ws://127.0.0.1:9000/ws");
 
                 ws.onopen = function () {
-                    clearTimeout(timeoutChecker); // Clear the timeout checker upon successful connection
+                    clearTimeout(timeoutChecker);
                     console.log("WebSocket connection opened");
                 };
 
+                // Handles incoming WebSocket messages.
                 ws.onmessage = function (event) {
-                    var message = event.data;
-                    alert("Predict: " + message);
+                    const response = JSON.parse(event.data);
+                    if (response && response.payload) {
+                        const payload = JSON.parse(response.payload);
+                        const predictionId = payload.prediction_id;
+                        const categories = payload.categories;
+
+                        // Creating a response UI with indented category items.
+                        let responseContent = `<div class="p-4 mt-4 rounded bg-blue-100">
+                                <p><strong>Prediction ID:</strong> ${predictionId}</p>
+                                <p><strong>Categories:</strong></p>
+                                <ul style="margin-left: 20px;">`; // Items indented
+                        categories.forEach(category => {
+                            responseContent += `<li>${category}</li>`;
+                        });
+                        responseContent += `</ul></div>`;
+
+                        // Displaying the response in the UI
+                        const responseDiv = document.getElementById('response');
+                        responseDiv.innerHTML = responseContent;
+                        responseDiv.style.display = 'block';
+                    }
                 };
 
                 ws.onerror = function (error) {
-                    // Log WebSocket errors to the console
                     console.error("WebSocket connection error", error);
                 };
 
                 ws.onclose = function (event) {
-                    // Attempt to reconnect after a delay when the connection closes
                     console.log("WebSocket connection closed. Attempting to reconnect...");
                     setTimeout(connectWebSocket, retryInterval);
                 };
 
-                // Set a timeout for the connection
                 timeoutChecker = setTimeout(function () {
-                    // If the connection is not open by the timeout, close the WebSocket
                     if (ws.readyState !== WebSocket.OPEN) {
                         console.log("WebSocket connection timed out. Closing...");
                         ws.close();
@@ -185,25 +194,18 @@
             }
         }
 
-
+        // Clears the form fields.
         function cleanForm() {
             document.getElementById('name').value = '';
             document.getElementById('description').value = '';
             document.getElementById('price').value = '0.0';
             document.getElementById('type-input').value = '';
             document.getElementById('manufacturer-input').value = '';
-            // Remover mensaje de error si existe
-            const errorDiv = document.getElementById('error-message');
-            if (errorDiv) {
-                errorDiv.remove();
-            }
         }
 
+        // Handles form submission and sends data over WebSocket.
         function predictForm(event) {
-
             event.preventDefault();
-
-            connectWebSocket();
 
             const name = document.getElementById('name').value.trim();
             const description = document.getElementById('description').value.trim();
@@ -211,38 +213,32 @@
             const product_type = document.getElementById('type-input').value;
             const manufacturer = document.getElementById('manufacturer-input').value;
 
-            function sendMessage(json) {
-                console.log('activo socket')
-                if (ws.readyState === WebSocket.OPEN) {
-                    console.log('enviando socket')
-                    ws.send(json);
-
-                } else {
-                    // Alert the user if the WebSocket connection isn't open
-                    alert("WebSocket connection is not open. Please try again.");
-                }
-            }
-
-
             if (!name || !description || !price || product_type === '' || manufacturer === '') {
                 displayError("Please fill out all fields correctly.");
                 return;
             }
-            console.log("enviando info")
+
             const data = {name, description, price, product_type, manufacturer};
             const jsonData = JSON.stringify(data);
-            console.log(jsonData)
 
-            sendMessage(jsonData)
-
+            sendMessage(jsonData);
         }
 
+        // Sends JSON data over the WebSocket if the connection is open.
+        function sendMessage(json) {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(json);
+            } else {
+                alert("WebSocket connection is not open. Please try again.");
+            }
+        }
+
+        // Displays a modal dialog with an error message.
         function displayError(message) {
-            console.log(message)
-            document.getElementById('modal').showModal()
+            console.log(message);
+            document.getElementById('modal').showModal();
         }
-
-
     </script>
+
 
 {% endblock content %}

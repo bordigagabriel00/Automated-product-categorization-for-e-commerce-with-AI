@@ -1,5 +1,4 @@
 import json
-import logging
 import pathlib
 from typing import Any
 
@@ -7,6 +6,7 @@ import fastapi.applications
 import nats
 import uvicorn
 from fastapi import FastAPI, WebSocket
+from fastapi.logger import logger as fastapi_logger
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -16,7 +16,7 @@ from core import api_provider
 from core import setup
 from core.arangodb_provider import ArangoDBConnection
 from core.environment import ConfigProvider
-
+from core.logger_provider import logger
 
 origins = [
     "*",
@@ -26,6 +26,8 @@ origins = [
 app: fastapi.applications.FastAPI = FastAPI(title=settings.app_name,
                                             description=settings.description,
                                             version=settings.app_version)
+fastapi_logger.handlers = logger.handlers
+fastapi_logger.setLevel(logger.level)
 
 app.add_middleware(
     CORSMiddleware,
@@ -43,7 +45,6 @@ BASE_STATIC_DIR = pathlib.Path(__file__).parent / 'ui' / 'static'
 app.mount("/static", StaticFiles(directory=BASE_STATIC_DIR), name="static")
 
 environment = ConfigProvider()
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 async def init_options(option: ConfigProvider) -> None:
@@ -56,7 +57,7 @@ async def init_options(option: ConfigProvider) -> None:
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     async def response_predict_handler(msg):
-        logging.info(f"Response model: '{msg.data.decode()}'")
+        logger.info(f"Response model: '{msg.data.decode()}'")
         await websocket.send_text(msg.data.decode())
 
     nc = await nats.connect(settings.nats_url)
@@ -70,7 +71,7 @@ async def websocket_endpoint(websocket: WebSocket):
         request_instance = RequestModel(payload=request)
         json_request = request_instance.model_dump_json()
 
-        logging.info(f"json request model: '{json_request}'")
+        logger.info(f"json request model: '{json_request}'")
 
         subject = "request.predict"
         message = json_request
@@ -97,15 +98,15 @@ async def startup_event():
                                                         settings.product_model_db)
 
         if db_connection.verify_connection():
-            logging.info("DB: The ArangoDB connection is active and verified.")
+            logger.info("DB: The ArangoDB connection is active and verified.")
         else:
-            logging.error("DB: The ArangoDB connection could not be verified.")
+            logger.error("DB: The ArangoDB connection could not be verified.")
     except Exception as e:
-        logging.error(f"Failed to initialize ArangoDB connection: {e}")
+        logger.error(f"Failed to initialize ArangoDB connection: {e}")
 
     collections = db_connection.db.collections()
-    logging.info("Successfully connected to ArangoDB!")
-    logging.info(collections)
+    logger.info("Successfully connected to ArangoDB!")
+    logger.info(collections)
 
 
 if __name__ == "__main__":

@@ -1,9 +1,9 @@
-import asyncio
-import logging
 import os
 from typing import Dict, Optional
 
 from tensorflow.keras.models import load_model
+
+from core.logger_provider import logger
 
 # Define the paths to your models here
 model_paths = {
@@ -51,12 +51,12 @@ class ModelManager(metaclass=SingletonMeta):
         """
         for key, path in model_path.items():
             full_path = f"{self.base_path}{path}"
-            logging.info(f"Loading model {key} from full path: {full_path}.")
+            logger.info(f"Loading model {key} from full path: {full_path}.")
             try:
                 self.models[key] = load_model(full_path)
-                logging.info(f"Model {key} loaded successfully from {path}.")
+                logger.info(f"Model {key} loaded successfully from {path}.")
             except Exception as e:
-                logging.error(f"Failed to load model {key} from Full path: {full_path}")
+                logger.error(f"Failed to load model {key} from Full path: {full_path}")
 
     def get_model(self, key: str) -> Optional[Dict]:
         """

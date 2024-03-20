@@ -1,5 +1,3 @@
-import logging
-
 from nats.aio.client import Client as NATS
 
 import config
@@ -26,39 +24,39 @@ class NatsProvider:
         }
         try:
             await self.nc.connect(**options)
-            logging.info("Connected to NATS")
+            logger.info("Connected to NATS")
         except Exception as e:
-            logging.error(f"Failed to connect to NATS: {e}")
+            logger.error(f"Failed to connect to NATS: {e}")
             raise
 
     async def publish(self, subject, message):
         if not self.nc.is_connected:
-            logging.warning("Not connected to NATS, attempting to reconnect...")
+            loggerwarning("Not connected to NATS, attempting to reconnect...")
             await self.connect()
         try:
             await self.nc.publish(subject, message.encode())
-            logging.info(f"Published message to {subject}")
+            logger.info(f"Published message to {subject}")
         except Exception as e:
-            logging.error(f"Failed to publish message: {e}")
+            logger.error(f"Failed to publish message: {e}")
             raise
 
     async def subscribe(self, subject, callback):
         if not self.nc.is_connected:
-            logging.warning("Not connected to NATS, attempting to reconnect...")
+            loggerwarning("Not connected to NATS, attempting to reconnect...")
             await self.connect()
         try:
             await self.nc.subscribe(subject, cb=callback)
-            logging.info(f"Subscribed to {subject}")
+            logger.info(f"Subscribed to {subject}")
         except Exception as e:
-            logging.error(f"Failed to subscribe: {e}")
+            logger.error(f"Failed to subscribe: {e}")
             raise
 
     async def close(self):
         try:
             await self.nc.close()
-            logging.info("NATS connection closed")
+            logger.info("NATS connection closed")
         except Exception as e:
-            logging.error(f"Failed to close NATS connection: {e}")
+            logger.error(f"Failed to close NATS connection: {e}")
             raise
 
 

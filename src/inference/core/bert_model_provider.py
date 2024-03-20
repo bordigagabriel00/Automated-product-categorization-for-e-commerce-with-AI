@@ -1,6 +1,8 @@
 import asyncio
-import logging
+
 from transformers import BertTokenizer, TFBertModel
+
+from core.logger_provider import logger
 
 
 async def init_load_bert_model():
@@ -20,12 +22,12 @@ async def init_load_bert_model():
         the function returns None values instead of raising the exception further.
     """
     try:
-        logging.info("Starting to load the BERT model and tokenizer asynchronously")
+        logger.info("Starting to load the BERT model and tokenizer asynchronously")
         tokenizer = await asyncio.to_thread(BertTokenizer.from_pretrained, 'bert-base-uncased')
         model = await asyncio.to_thread(TFBertModel.from_pretrained, 'bert-base-uncased')
-        logging.info("Successfully loaded the BERT model and tokenizer")
+        logger.info("Successfully loaded the BERT model and tokenizer")
         return tokenizer, model
     except Exception as e:
         # In case of an error, log the exception and return None values.
-        logging.error(f"An error occurred while loading the BERT model and tokenizer: {e}")
+        logger.error(f"An error occurred while loading the BERT model and tokenizer: {e}")
         return None, None

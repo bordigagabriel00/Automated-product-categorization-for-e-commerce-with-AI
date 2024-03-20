@@ -9,9 +9,11 @@ from core import setup
 from core.bert_model_provider import init_load_bert_model
 from core.environment import ConfigProvider
 from core.normalization_provider import init_normalization
+from core.logger_provider import logger
+from fastapi.logger import logger as fastapi_logger
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 # Instantiate the FastAPI application
 app: FastAPI = FastAPI(
@@ -19,6 +21,9 @@ app: FastAPI = FastAPI(
     description=settings.description,
     version=settings.app_version
 )
+
+fastapi_logger.handlers = logger.handlers
+fastapi_logger.setLevel(logger.level)
 
 # Instantiate the configuration provider
 environment = ConfigProvider()
@@ -45,7 +50,7 @@ def show_api(web_app: FastAPI) -> None:
     """
     for route in web_app.routes:
         if hasattr(route, "methods") and hasattr(route, "path"):
-            logging.info(f"API Route: {route.path} Methods: {list(route.methods)}")
+            logger.info(f"API Route: {route.path} Methods: {list(route.methods)}")
 
 
 @app.on_event("startup")
@@ -58,7 +63,7 @@ async def startup_event():
     - Initializing NLP components
     """
 
-    logging.info("Starting application setup.")
+    logger.info("Starting application setup.")
 
     # Initialize application options
     await init_options(environment)
@@ -71,16 +76,25 @@ async def startup_event():
 
     # Initialize NLP components
     await init_normalization()
-    logging.info("Application setup completed.")
+    logger.info("Application setup completed.")
 
     # Initialize BERT model
     tokenizer, model = await init_load_bert_model()
     if tokenizer is not None and model is not None:
-        logging.info("Tokenizer and model are ready to use")
+        logger.info("Tokenizer and model are ready to use")
     else:
-        logging.error("Failed to load tokenizer and model")
+        logger.error("Failed to load tokenizer and model")
 
 
 if __name__ == "__main__":
     # Run the application with Uvicorn, with the ability to reload on code changes.
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+
+    """
+    TODO: Predict models
+    TODO: Docker compose / DockerFIle
+    TODO: TestUNI
+    TODO: Test integrator
+    TODO: Video
+    TODO: Server
+    """

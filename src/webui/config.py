@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     name_system_db: str = "_system"
     product_model_db: str = "Product_Model"
     username: str = "root"
-    password: str ="rootpassword"
+    password: str = "rootpassword"
     csv_file: str = "products.csv"
     product_url: str = "https://raw.githubusercontent.com/anyoneai/e-commerce-open-data-set/master/products.json"
 

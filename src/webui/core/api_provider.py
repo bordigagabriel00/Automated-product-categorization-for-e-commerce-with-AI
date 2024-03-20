@@ -1,5 +1,6 @@
 import fastapi
-import logging
+
+from core.logger_provider import logger
 
 
 def show(app: fastapi.FastAPI) -> None:
@@ -7,4 +8,4 @@ def show(app: fastapi.FastAPI) -> None:
     for route in app.routes:
         if hasattr(route, "methods") and hasattr(route, "path"):
             routes_list.append({"path": route.path, "methods": list(route.methods)})
-            logging.info(f"API: '{route}'")
+            logger.info(f"API: '{route}'")
