@@ -1,16 +1,17 @@
-import logging
-
 import uvicorn
 from fastapi import FastAPI
+from fastapi.logger import logger as fastapi_logger
 
 # Local imports
 from config import settings
 from core import setup
 from core.bert_model_provider import init_load_bert_model
 from core.environment import ConfigProvider
-from core.normalization_provider import init_normalization
 from core.logger_provider import logger
-from fastapi.logger import logger as fastapi_logger
+from core.model_ai_provider import model_admin, model_paths
+from core.normalization_provider import init_normalization
+from core.scaler_model_provider import scaler_provider
+from core.encoder_model_provider import encoder_provider
 
 # Configure logging
 
@@ -84,6 +85,22 @@ async def startup_event():
         logger.info("Tokenizer and model are ready to use")
     else:
         logger.error("Failed to load tokenizer and model")
+
+    # Initialize scaler files
+    await scaler_provider.load_scaler_async()
+    if scaler_provider.load_success:
+        logger.error("Not all Scaler files were loaded successfully.")
+    logger.info("SCALER: Scaler are ready to use")
+
+    # Initialize encoder files
+    await encoder_provider.load_encoder_async()
+    if encoder_provider.load_success:
+        logger.error("Not all Encoder files were loaded successfully.")
+    logger.info("ENCODER: Encoder are ready to use")
+
+    # Initialize models predictions
+    model_admin.load_models(model_paths)
+    logger.info("MODELS: Models are ready to use")
 
 
 if __name__ == "__main__":

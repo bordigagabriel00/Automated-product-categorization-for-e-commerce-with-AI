@@ -18,6 +18,8 @@ from core.arangodb_provider import ArangoDBConnection
 from core.environment import ConfigProvider
 from core.logger_provider import logger
 
+
+
 origins = [
     "*",
 ]
