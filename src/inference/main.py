@@ -7,12 +7,13 @@ from config import settings
 from core import setup
 from core.bert_model_provider import init_load_bert_model
 from core.environment import ConfigProvider
+
 from core.logger_provider import logger
 from core.model_ai_provider import model_admin, model_paths
 from core.normalization_provider import init_normalization
 from core.scaler_model_provider import scaler_provider
 from core.encoder_model_provider import encoder_provider
-
+from core.label_encoder_provider import label_encoder_provider
 # Configure logging
 
 
@@ -97,6 +98,12 @@ async def startup_event():
     if encoder_provider.load_success:
         logger.error("Not all Encoder files were loaded successfully.")
     logger.info("ENCODER: Encoder are ready to use")
+
+    # Initialize label encoder files
+    await label_encoder_provider.load_label_encoders_async()
+    if label_encoder_provider.load_success:
+        logger.error("Not all Label Encoder files were loaded successfully.")
+    logger.info("LABEL-ENCODER: Encoder are ready to use")
 
     # Initialize models predictions
     model_admin.load_models(model_paths)
