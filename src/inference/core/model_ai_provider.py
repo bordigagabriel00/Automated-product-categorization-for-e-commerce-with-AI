@@ -7,11 +7,11 @@ from core.logger_provider import logger
 
 # Define the paths to your models here
 model_paths = {
+    "model0": "/assets/model/model_0_preberttune.h5",
     "model1": "/assets/model/model_1_preberttune.h5",
     "model2": "/assets/model/model_2_preberttune.h5",
     "model3": "/assets/model/model_3_preberttune.h5",
-    "model4": "/assets/model/model_4_preberttune.h5",
-    "model5": "/assets/model/model_5_preberttune.h5",
+    "model5": "/assets/model/model_4_preberttune.h5",
 }
 
 
@@ -73,4 +73,4 @@ class ModelManager(metaclass=SingletonMeta):
 
 file_path = os.getcwd()
 
-model_provider = ModelManager(model_paths, file_path)
+model_admin = ModelManager(model_paths, file_path)
