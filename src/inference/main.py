@@ -94,6 +94,11 @@ async def startup_event():
         raise InitializationError("Not all Models files were loaded successfully.")
     logger.info("MODELS: Models are ready to use")
 
+    # Initialize scaler files
+    if not scaler_provider.is_loaded:
+        raise InitializationError("Not all scaler files were loaded successfully.")
+    logger.info("SCALERS: Scalers are ready to use")
+
 
 """
 

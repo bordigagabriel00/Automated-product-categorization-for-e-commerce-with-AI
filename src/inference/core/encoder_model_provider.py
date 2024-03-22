@@ -14,11 +14,12 @@ encoder_files_paths = {
 }
 
 
+# noinspection DuplicatedCode
 class EncoderManager(metaclass=SingletonMeta):
     def __init__(self):
         self.is_loaded = None
         self.base_path = None
-        if not hasattr(self, 'encoder'):  # Revisa si 'encoder' ya ha sido inicializado.
+        if not hasattr(self, 'encoder'):
             self.encoder = {}
             self.load_encoders(encoder_files_paths)
 
