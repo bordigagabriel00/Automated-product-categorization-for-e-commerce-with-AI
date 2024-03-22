@@ -1,10 +1,9 @@
 import asyncio
 import os
-import h5py
 from concurrent.futures import ThreadPoolExecutor
 from typing import Dict
 
-from fastapi import HTTPException
+import h5py
 
 from core.logger_provider import logger
 
@@ -43,7 +42,7 @@ class LabelEncoderManager:
         with ThreadPoolExecutor() as pool:
             futures = []
             for key, path in self.label_encoder_dict.items():
-                full_path = os.path.join(self.base_path, path)
+                full_path = f"{self.base_path}{path}"
                 future = loop.run_in_executor(pool, self.load_label_encoder_file, key, full_path)
                 futures.append((key, future))
 
@@ -67,7 +66,7 @@ class LabelEncoderManager:
                 self.label_encoders[key] = hf['label_encoder'][:]
                 logger.info(f"Label encoder file {key} loaded successfully.")
         except Exception as e:
-            logger.error(f"Failed to load label encoder file {key}. Exception: {e}")
+            logger.error(f"Failed to load label encoder file {key}. Exception: {e}. path: {full_path}")
             self.load_success = False
 
     def get_label_encoder(self, key: str):
@@ -83,7 +82,11 @@ class LabelEncoderManager:
         if key in self.label_encoders:
             return self.label_encoders[key]
         else:
-            raise HTTPException(status_code=404, detail=f"Label encoder file {key} not found.")
+            return None
 
 
 label_encoder_provider = LabelEncoderManager(os.getcwd(), label_encoder_files_paths)
+"""
+/mnt/DiscoTera/ws/anyone-program/anyone-ws/final-project/src/Automated-product-categorization-for-e-commerce-with-AI/src/inference/assets/model/label_encoder_0.h5
+/mnt/DiscoTera/ws/anyone-program/anyone-ws/final-project/src/Automated-product-categorization-for-e-commerce-with-AI/src/inference/assets/model/label_encoder_1.h5
+"""

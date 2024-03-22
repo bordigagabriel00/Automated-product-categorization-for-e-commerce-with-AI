@@ -59,5 +59,11 @@ class ScalerManager:
             logger.error(f"Failed to load Scaler file {key}. Exception: {e}")
             self.load_success = False
 
+    def get_scaler(self, key: str):
+        if key in self.scaler_dict:
+            return self.scaler_dict[key]
+        else:
+            return None
+
 
 scaler_provider = ScalerManager(os.getcwd(), scaler_files_paths)

@@ -59,5 +59,11 @@ class EncoderManager:
             logger.error(f"Failed to load encoder file {key}. Exception: {e}")
             self.load_success = False
 
+    def get_encoder(self, key: str):
+        if key in self.encoder_dict:
+            return self.encoder_dict[key]
+        else:
+            return None
+
 
 encoder_provider = EncoderManager(os.getcwd(), encoder_files_paths)

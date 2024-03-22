@@ -11,7 +11,7 @@ model_paths = {
     "model1": "/assets/model/model_1_preberttune.h5",
     "model2": "/assets/model/model_2_preberttune.h5",
     "model3": "/assets/model/model_3_preberttune.h5",
-    "model5": "/assets/model/model_4_preberttune.h5",
+    "model4": "/assets/model/model_4_preberttune.h5",
 }
 
 

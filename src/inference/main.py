@@ -5,15 +5,16 @@ from fastapi.logger import logger as fastapi_logger
 # Local imports
 from config import settings
 from core import setup
-from core.bert_model_provider import init_load_bert_model
+from core.bert_model_provider import bert_service
+from core.common_exception import InitializationError
+from core.encoder_model_provider import encoder_provider
 from core.environment import ConfigProvider
-
+from core.label_encoder_provider import label_encoder_provider
 from core.logger_provider import logger
 from core.model_ai_provider import model_admin, model_paths
 from core.normalization_provider import init_normalization
 from core.scaler_model_provider import scaler_provider
-from core.encoder_model_provider import encoder_provider
-from core.label_encoder_provider import label_encoder_provider
+
 # Configure logging
 
 
@@ -81,11 +82,11 @@ async def startup_event():
     logger.info("Application setup completed.")
 
     # Initialize BERT model
-    tokenizer, model = await init_load_bert_model()
-    if tokenizer is not None and model is not None:
+    await bert_service.init_load_bert_model()
+    if bert_service.is_loaded:
         logger.info("Tokenizer and model are ready to use")
     else:
-        logger.error("Failed to load tokenizer and model")
+        raise InitializationError("Failed to load tokenizer and model")
 
     # Initialize scaler files
     await scaler_provider.load_scaler_async()

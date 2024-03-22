@@ -27,19 +27,19 @@ def init_prediction_request(data: Any) -> PredictRequest:
 
 
 async def predict_request_handler(msg):
-    logger.info(f"Predict: Starting process")
+    logger.info(f"Predict Handler: Starting process")
     data = json.loads(msg.data.decode())
-    logger.info(f"Predict: Received subject request: {msg.subject} ")
-    logger.info(f"Predict: Received predict request: {data}")
+    logger.info(f"Predict Handler: Received subject request: {msg.subject} ")
+    logger.info(f"Predict Handler: Received predict request: {data}")
 
     categories = ["Category 1", "Category 2", "Category 3", "Category 4", "Category 5"]
-    payload = {
+    predict_request = {
         "prediction_id": data["id"],
-        "categories": categories
+        "payload":  data["payload"]
 
     }
 
-    resp_prediction = predict_with_models(payload)
+    resp_prediction = predict_with_models(predict_request)
 
     logger.info(f"Predict: Ending process")
 
