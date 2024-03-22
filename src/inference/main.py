@@ -1,3 +1,5 @@
+import os
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.logger import logger as fastapi_logger
@@ -7,7 +9,7 @@ from config import settings
 from core import setup
 from core.bert_model_provider import bert_service
 from core.common_exception import InitializationError
-from core.encoder_model_provider import encoder_provider
+from core.encoder_model_provider import encoder_provider, EncoderManager, encoder_files_paths
 from core.environment import ConfigProvider
 from core.label_encoder_provider import label_encoder_provider
 from core.logger_provider import logger
@@ -81,6 +83,20 @@ async def startup_event():
     await init_normalization()
     logger.info("Application setup completed.")
 
+    # Initialize encoder files
+    encoder_provider
+    if not encoder_provider.is_loaded:
+        raise InitializationError("Not all Encoder files were loaded successfully.")
+    logger.info("ENCODER: Encoder are ready to use")
+
+    # Initialize models predictions
+    if not model_admin.is_loaded:
+        raise InitializationError("Not all Models files were loaded successfully.")
+    logger.info("MODELS: Models are ready to use")
+
+
+"""
+
     # Initialize BERT model
     await bert_service.init_load_bert_model()
     if bert_service.is_loaded:
@@ -90,26 +106,24 @@ async def startup_event():
 
     # Initialize scaler files
     await scaler_provider.load_scaler_async()
-    if scaler_provider.load_success:
+    if not scaler_provider.load_success:
         logger.error("Not all Scaler files were loaded successfully.")
     logger.info("SCALER: Scaler are ready to use")
 
     # Initialize encoder files
     await encoder_provider.load_encoder_async()
-    if encoder_provider.load_success:
+    if not encoder_provider.load_success:
         logger.error("Not all Encoder files were loaded successfully.")
     logger.info("ENCODER: Encoder are ready to use")
 
     # Initialize label encoder files
     await label_encoder_provider.load_label_encoders_async()
-    if label_encoder_provider.load_success:
+    if not label_encoder_provider.load_success:
         logger.error("Not all Label Encoder files were loaded successfully.")
     logger.info("LABEL-ENCODER: Encoder are ready to use")
 
-    # Initialize models predictions
-    model_admin.load_models(model_paths)
-    logger.info("MODELS: Models are ready to use")
-
+    
+"""
 
 if __name__ == "__main__":
     # Run the application with Uvicorn, with the ability to reload on code changes.

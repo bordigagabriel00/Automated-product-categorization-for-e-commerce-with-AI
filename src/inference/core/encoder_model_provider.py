@@ -1,69 +1,48 @@
-import asyncio
 import os
 import pickle
-from concurrent.futures import ThreadPoolExecutor
-from typing import Dict
+from typing import Dict, Optional
 
 from core.logger_provider import logger
+from core.singleton import SingletonMeta
 
 encoder_files_paths = {
-    "encoder0": "/assets/model/encoder_0.pkl",
-    "encoder1": "/assets/model/encoder_1.pkl",
-    "encoder2": "/assets/model/encoder_2.pkl",
-    "encoder3": "/assets/model/encoder_3.pkl",
-    "encoder4": "/assets/model/encoder_4.pkl",
+    "model0": "/assets/encoder/encoder.pkl",
+    "model1": "/assets/encoder/encoder_1.pkl",
+    "model2": "/assets/encoder/encoder_2.pkl",
+    "model3": "/assets/encoder/encoder_3.pkl",
+    "model4": "/assets/encoder/encoder_4.pkl",
 }
 
 
-# noinspection DuplicatedCode
-class EncoderManager:
-    def __init__(self, base_path: str, encoder_dict: Dict[str, str]):
-        self.base_path = base_path
-        self.encoder_dict = encoder_dict
-        self.encoder = {}
-        self.load_success = True
+class EncoderManager(metaclass=SingletonMeta):
+    def __init__(self):
+        self.is_loaded = None
+        self.base_path = None
+        if not hasattr(self, 'encoder'):  # Revisa si 'encoder' ya ha sido inicializado.
+            self.encoder = {}
+            self.load_encoders(encoder_files_paths)
 
-    async def load_encoder_async(self) -> None:
-        """
-        Asynchronously loads encoder files defined in encoder_dict.
-        """
-        loop = asyncio.get_event_loop()
+    def load_encoders(self, model_path: Dict[str, str]) -> None:
+        all_loaded = True  
+        self.base_path = os.getcwd()   
+        for key, path in model_path.items():
+            full_path = f"{self.base_path}{path}"
+            logger.info(f"Loading model {key} from full path: {full_path}.")
+            try:
+                with open(full_path, 'rb') as file:
+                    self.encoder[key] = pickle.load(file)
+                    logger.info(f"Encoder file {key} loaded successfully.")
+            except Exception as e:
+                logger.error(f"Failed to load model {key} from full path: {full_path}. Error: {e}")
+                all_loaded = False
+                break   
+                
+        self.is_loaded = all_loaded  
 
-        with ThreadPoolExecutor() as pool:
-            futures = []
-            for key, path in self.encoder_dict.items():
-                full_path = f"{self.base_path}{path}"
-                future = loop.run_in_executor(pool, self.load_encoder_file, key, full_path)
-                futures.append((key, future))
-
-            all_loaded_successfully = True
-            for key, future in futures:
-                try:
-                    await future
-                except Exception as e:
-                    logger.error(f"Failed to load encoder {key}. Exception: {e}")
-                    all_loaded_successfully = False
-                    break
-
-            self.load_success = all_loaded_successfully
-
-    def load_encoder_file(self, key: str, full_path: str):
-        """
-        Loads a single encoder file.
-        """
-        try:
-            with open(full_path, 'rb') as file:
-                self.encoder[key] = pickle.load(file)
-                logger.info(f"encoder file {key} loaded successfully.")
-        except Exception as e:
-            logger.error(f"Failed to load encoder file {key}. Exception: {e}")
-            self.load_success = False
-
-    def get_encoder(self, key: str):
-        if key in self.encoder_dict:
-            return self.encoder_dict[key]
-        else:
-            return None
+    def get_encoder(self, key: str) -> Optional[Dict]:
+        return self.encoder.get(key, None)
 
 
-encoder_provider = EncoderManager(os.getcwd(), encoder_files_paths)
+encoder_provider = EncoderManager()
+
+

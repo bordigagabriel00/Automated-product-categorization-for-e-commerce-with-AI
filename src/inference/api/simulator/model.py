@@ -40,7 +40,7 @@ class ResponsePrediction(BaseModel):
 
     Attributes:
         id (UUID4): A unique identifier for the prediction response, using UUID4 format.
-        payload (str): The payload of the prediction response, typically the predicted value or outcome.
+        categories (str): The payload of the prediction response, typically the predicted value or outcome.
     """
     id: UUID4
-    payload: str
+    categories: list[str]

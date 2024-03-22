@@ -2,25 +2,25 @@ import asyncio
 import os
 import pickle
 from concurrent.futures import ThreadPoolExecutor
-from typing import Dict
+from typing import Dict, Any
 
 from core.logger_provider import logger
 
 scaler_files_paths = {
-    "scaler0": "/assets/model/scaler_0.pkl",
-    "scaler1": "/assets/model/scaler_1.pkl",
-    "scaler2": "/assets/model/scaler_2.pkl",
-    "scaler3": "/assets/model/scaler_3.pkl",
-    "scaler4": "/assets/model/scaler_4.pkl",
+    "model0": "/assets/model/scaler_0.pkl",
+    "model1": "/assets/model/scaler_1.pkl",
+    "model2": "/assets/model/scaler_2.pkl",
+    "model3": "/assets/model/scaler_3.pkl",
+    "model4": "/assets/model/scaler_4.pkl",
 }
 
 
 # noinspection DuplicatedCode
 class ScalerManager:
-    def __init__(self, base_path: str, scaler_dict: Dict[str, str]):
+    def __init__(self, base_path: str, scaler_dict: Dict[str, Any]):
         self.base_path = base_path
         self.scaler_dict = scaler_dict
-        self.scaler = {}
+        self.scalers = {}
         self.load_success = True
 
     async def load_scaler_async(self) -> None:
@@ -53,17 +53,14 @@ class ScalerManager:
         """
         try:
             with open(full_path, 'rb') as file:
-                self.scaler[key] = pickle.load(file)
-                logger.info(f"Scaler file {key} loaded successfully.")
+                self.scaler_dict[key] = pickle.load(file)
+                logger.info(f"Scaler file for model {key} loaded successfully.")
         except Exception as e:
-            logger.error(f"Failed to load Scaler file {key}. Exception: {e}")
+            logger.error(f"Failed to load scaler file for model {key}. Exception: {e}")
             self.load_success = False
 
-    def get_scaler(self, key: str):
-        if key in self.scaler_dict:
-            return self.scaler_dict[key]
-        else:
-            return None
+    def get_scaler(self, key: str) -> Any:
+        return self.scalers.get(key, None)
 
 
 scaler_provider = ScalerManager(os.getcwd(), scaler_files_paths)

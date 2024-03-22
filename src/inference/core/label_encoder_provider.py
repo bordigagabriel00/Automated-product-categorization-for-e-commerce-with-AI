@@ -1,18 +1,18 @@
 import asyncio
 import os
 from concurrent.futures import ThreadPoolExecutor
-from typing import Dict
+from typing import Dict, Any
 
 import h5py
 
 from core.logger_provider import logger
 
 label_encoder_files_paths = {
-    "label_encoder0": "/assets/model/label_encoder_0.h5",
-    "label_encoder1": "/assets/model/label_encoder_1.h5",
-    "label_encoder2": "/assets/model/label_encoder_2.h5",
-    "label_encoder3": "/assets/model/label_encoder_3.h5",
-    "label_encoder4": "/assets/model/label_encoder_4.h5",
+    "model0": "/assets/model/label_encoder_0.h5",
+    "model1": "/assets/model/label_encoder_1.h5",
+    "model2": "/assets/model/label_encoder_2.h5",
+    "model3": "/assets/model/label_encoder_3.h5",
+    "model4": "/assets/model/label_encoder_4.h5",
 }
 
 
@@ -27,7 +27,7 @@ class LabelEncoderManager:
         load_success (bool): Flag indicating if all label encoders were loaded successfully.
     """
 
-    def __init__(self, base_path: str, label_encoder_dict: Dict[str, str]):
+    def __init__(self, base_path: str, label_encoder_dict: Dict[str, Any]):
         self.base_path = base_path
         self.label_encoder_dict = label_encoder_dict
         self.label_encoders = {}
@@ -51,7 +51,7 @@ class LabelEncoderManager:
                 try:
                     await future
                 except Exception as e:
-                    logger.error(f"Failed to load label encoder {key}. Exception: {e}")
+                    logger.error(f"Failed to load label encoder for model  {key}. Exception: {e}")
                     all_loaded_successfully = False
                     break
 
@@ -64,12 +64,12 @@ class LabelEncoderManager:
         try:
             with h5py.File(full_path, 'r') as hf:
                 self.label_encoders[key] = hf['label_encoder'][:]
-                logger.info(f"Label encoder file {key} loaded successfully.")
+                logger.info(f"Label encoder file for model  {key} loaded successfully.")
         except Exception as e:
-            logger.error(f"Failed to load label encoder file {key}. Exception: {e}. path: {full_path}")
+            logger.error(f"Failed to load label encoder file for model {key}. Exception: {e}. path: {full_path}")
             self.load_success = False
 
-    def get_label_encoder(self, key: str):
+    def get_label_encoder(self, key: str) -> Any:
         """
         Retrieves a loaded label encoder by its key.
 
@@ -86,7 +86,3 @@ class LabelEncoderManager:
 
 
 label_encoder_provider = LabelEncoderManager(os.getcwd(), label_encoder_files_paths)
-"""
-/mnt/DiscoTera/ws/anyone-program/anyone-ws/final-project/src/Automated-product-categorization-for-e-commerce-with-AI/src/inference/assets/model/label_encoder_0.h5
-/mnt/DiscoTera/ws/anyone-program/anyone-ws/final-project/src/Automated-product-categorization-for-e-commerce-with-AI/src/inference/assets/model/label_encoder_1.h5
-"""

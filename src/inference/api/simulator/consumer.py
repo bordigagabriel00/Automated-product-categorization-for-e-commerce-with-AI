@@ -32,7 +32,7 @@ async def predict_request_handler(msg):
     logger.info(f"Predict Handler: Received subject request: {msg.subject} ")
     logger.info(f"Predict Handler: Received predict request: {data}")
 
-    categories = ["Category 1", "Category 2", "Category 3", "Category 4", "Category 5"]
+
     predict_request = {
         "prediction_id": data["id"],
         "payload":  data["payload"]

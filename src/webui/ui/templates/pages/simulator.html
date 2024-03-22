@@ -22,7 +22,7 @@
                                 Description
                             </label>
                             <textarea
-                                    class=" appearance-none border rounded w-full py-1 px-1  mb-3 leading-tight focus:outline-none focus:-outline "
+                                    class=" appearance-none border rounded w-full py-1 px-1 mb-3 h-auto leading-tight focus:outline-none focus:-outline "
                                     id="description" placeholder=""></textarea>
                         </div>
                         <div class="pt-3">
@@ -153,11 +153,17 @@
 
                 // Handles incoming WebSocket messages.
                 ws.onmessage = function (event) {
+                    console.log("Response: " + event.data.toString())
+
+                    // Displaying the response in the UI
+                    const responseDiv = document.getElementById('response');
+                    responseDiv.innerHTML = `<div></div>`;;
+                    responseDiv.style.display = 'block';
+
                     const response = JSON.parse(event.data);
-                    if (response && response.payload) {
-                        const payload = JSON.parse(response.payload);
-                        const predictionId = payload.prediction_id;
-                        const categories = payload.categories;
+                    if (response) {
+                        const predictionId = response.id;
+                        const categories = response.categories;
 
                         // Creating a response UI with indented category items.
                         let responseContent = `<div class="p-4 mt-4 rounded bg-blue-100">
@@ -220,7 +226,7 @@
 
             const data = {name, description, price, product_type, manufacturer};
             const jsonData = JSON.stringify(data);
-
+            console.log("Request: " + jsonData)
             sendMessage(jsonData);
         }
 

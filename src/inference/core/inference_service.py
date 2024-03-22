@@ -1,89 +1,101 @@
-import json
-from typing import Dict, Any
+import pickle
+import re
+from typing import Any
+from typing import Optional
 
+import h5py
 import numpy as np
+import pandas as pd
+from nltk import pos_tag
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
 from scipy.sparse import hstack
+from tensorflow.keras.models import load_model
+from transformers import BertTokenizer, TFBertModel
 
 from api.simulator.model import ResponsePrediction
-from core.bert_model_provider import bert_service
-from core.encoder_model_provider import encoder_provider
-from core.label_encoder_provider import label_encoder_provider
 from core.logger_provider import logger
-from core.model_ai_provider import model_admin as ma, model_paths
 from core.normalization_provider import normalize_text
-from core.scaler_model_provider import scaler_provider
+from core.model_ai_provider import model_admin
+from core.encoder_model_provider import encoder_provider
+
+# Initialize NLTK resources
+stop_words = set(stopwords.words('english'))
+lemmatizer = WordNetLemmatizer()
 
 
-def action_for_model0(user_input: Dict[str, Any], model: Any, code_model: str) -> None:
-    logger.info(f"PREDICT MODEL 0: input {user_input}  code_model: {code_model}.")
-    categorical_columns = ['type', 'manufacturer']
-
-    encoder = encoder_provider.get_encoder(code_model)
-    scaler = scaler_provider.get_scaler(code_model)
-    label_encoder_classes = label_encoder_provider.get_label_encoder(code_model)
-
-    extracted_name_hidden, extracted_description_hidden, final_input_array, scaled_price = prepare_input(
-        user_input, scaler, encoder, categorical_columns)
-
-    predicted_labels = predict_model_1(final_input_array, model)
-    predicted_labels_2 = compare_predictions(predicted_labels, label_encoder_classes)
-
-    logger.info(f"PREDICT MODEL 0: predict_ labels{predicted_labels}")
-    logger.info(f"PREDICT MODEL 0: predict_ labels{predicted_labels_2}")
+def get_wordnet_pos(tag):
+    if tag.startswith('J'):
+        return 'a'  # Adjective
+    elif tag.startswith('V'):
+        return 'v'  # Verb
+    elif tag.startswith('N'):
+        return 'n'  # Noun
+    elif tag.startswith('R'):
+        return 'r'  # Adverb
+    else:
+        return 'n'  # Default to noun if not recognized
 
 
-def action_for_model1(user_input: Dict[str, Any], model: Any, code_model: str) -> None:
-    logger.info(F"PREDICT MODEL 2: input {user_input}  code_model: {code_model}.")
-    # Process payload with model2
+def remove_extra_new_lines(text):
+    if pd.isnull(text):  # check if text is nan
+        return ''  # replace with an empty string
+
+    clean_text = [i for i in str(text).splitlines() if i.strip()]
+    clean_text = ' '.join(clean_text)
+    return clean_text
 
 
-def action_for_model2(user_input: Dict[str, Any], model: Any, code_model: str) -> None:
-    # Process payload with model3
-    return
+def remove_extra_whitespace(text: str) -> str:
+    spaceless_text = re.sub(r'\s+', ' ', text)
+    return spaceless_text
 
 
-def action_for_model3(user_input: Dict[str, Any], model: Any, code_model: str) -> None:
-    # Process payload with model3
-    return
+def remove_special_chars(text: str, remove_digits: Optional[bool] = False) -> str:
+    if remove_digits:
+        pattern = r'[^a-zA-Z\s]'
+    else:
+        pattern = r'[^a-zA-Z0-9\s]'
+
+    cleaned_text = re.sub(pattern, '', text)
+    return cleaned_text
 
 
-def action_for_model4(user_input: Dict[str, Any], model: Any, code_model: str) -> None:
-    # Process payload with model3
-    return
+def normalize_text(text):
+    text = remove_extra_new_lines(text)
+
+    text = remove_extra_whitespace(text)
+
+    text = remove_special_chars(text, remove_digits=False)
+
+    tokens = word_tokenize(text)
+    tokens = [token.lower() for token in tokens if token.isalpha() and token.lower() not in stop_words]
+    tagged_tokens = pos_tag(tokens)
+    lemmas = [lemmatizer.lemmatize(token, get_wordnet_pos(tag)) for token, tag in tagged_tokens]
+
+    return ' '.join(lemmas)
 
 
-def default_action(user_input: Dict[str, Any], model: Any, code_model: str) -> None:
-    # Default action for unhandled model codes
-    return
+categorical_columns = ['type', 'manufacturer']
 
+"""
+PREDiCT 1
+"""
 
-def predict_with_models(request: dict[str, Any]) -> ResponsePrediction:
-    logger.info(f"PREDICT MODEL: request {request} ")
-    models = list(model_paths.keys())
-    logger.info(f"PREDICT MODEL: models {models} ")
-    for _, code in enumerate(models):
-        logger.info(F"Search model: {code}")
-        model = ma.get_model(code)
-        if model:
-            logger.info(F"{code} loaded and ready for use.")
-            predict_category(model, request, code)
-        else:
-            logger.error(f"{code} could not be loaded.")
-    return ResponsePrediction(id=request["prediction_id"], payload=json.dumps(request))
+# 'scaler.pkl'
+with open(
+        '/mnt/DiscoTera/ws/anyone-program/anyone-ws/final-project/src/Automated-product-categorization-for-e-commerce-with-AI/src/inference/assets/scaler/scaler.pkl',
+        'rb') as file:
+    scaler = pickle.load(file)
+# 'label_encoder.h5'
+with h5py.File(
+        '/mnt/DiscoTera/ws/anyone-program/anyone-ws/final-project/src/Automated-product-categorization-for-e-commerce-with-AI/src/inference/assets/label_encoder/label_encoder.h5',
+        'r') as hf:
+    label_encoder_classes = hf['label_encoder'][:]
 
-
-def predict_category(model: Any, request: dict[str, Any], code_model: str) -> None:
-    data = request["payload"]
-    user_input = {
-        "name": data["name"],
-        "description": data["description"],
-        "price": float(data["price"]),
-        "type": data["product_type"],
-        "manufacturer": data["manufacturer"],
-    }
-
-    action = action_switcher.get(code_model, default_action)
-    action(user_input, model, code_model)
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+model = TFBertModel.from_pretrained('bert-base-uncased')
 
 
 def extract_last_hidden_state(embeddings):
@@ -92,8 +104,6 @@ def extract_last_hidden_state(embeddings):
 
 def tokenize_and_get_embeddings(column):
     # Tokenize text
-    tokenizer = bert_service.get_tokenizer()
-    bert_model = bert_service.get_bert_model()
     if isinstance(column, str):
         tokenized_text = tokenizer(column, padding=True, truncation=True, return_tensors='tf')
     elif isinstance(column, list) and all(isinstance(item, str) for item in column):
@@ -101,18 +111,16 @@ def tokenize_and_get_embeddings(column):
     else:
         raise ValueError("Invalid input format.")
 
-    outputs = bert_model(tokenized_text)
+    outputs = model(tokenized_text)
     embeddings = outputs.last_hidden_state.numpy()
 
     return embeddings
 
 
 def prepare_input(user_input, scaler, encoder, categorical_columns):
-    logger.info(f"Preparing input: normalize name, description ")
     user_input['name'] = normalize_text(user_input['name'])
     user_input['description'] = normalize_text(user_input['description'])
 
-    logger.info(f"Tokenizer input: normalize text ")
     name_embeddings = tokenize_and_get_embeddings(user_input['name'])
     description_embeddings = tokenize_and_get_embeddings(user_input['description'])
     extracted_name_hidden = extract_last_hidden_state(name_embeddings)
@@ -122,10 +130,8 @@ def prepare_input(user_input, scaler, encoder, categorical_columns):
     encoded_user_input = [[user_input[column]] for column in categorical_columns]
     encoded_user_input = np.array(encoded_user_input).reshape(1, -1)
     encoded_categorical_features = encoder.transform(encoded_user_input)
-    logger.info(f"Encoded {encoded_categorical_features.shape}")
 
     combined_features = hstack([encoded_categorical_features, np.array([[scaled_price]])])
-    logger.info(f"Encoded {combined_features.shape}")
     num_cat_input_array = combined_features.toarray().astype(np.float32)
     final_input_array = np.concatenate((num_cat_input_array, extracted_name_hidden, extracted_description_hidden),
                                        axis=1)
@@ -133,11 +139,10 @@ def prepare_input(user_input, scaler, encoder, categorical_columns):
     return extracted_name_hidden, extracted_description_hidden, final_input_array, scaled_price
 
 
-def predict_model_1(final_input_array, model_1):
-    predictions = model_1.predict(final_input_array)
+def predict_model_1(final_input_array):
+    model1 = model_admin.get_model("model0")
+    predictions = model1.predict(final_input_array)
     subcategory_pred_labels = np.argmax(predictions, axis=1)
-    print(predictions)
-    print(subcategory_pred_labels)
     return subcategory_pred_labels
 
 
@@ -151,10 +156,48 @@ def compare_predictions(subcategory_pred_labels, label_encoder_classes):
     return predicted_labels
 
 
-action_switcher = {
-    "model0": action_for_model0,
-    "model1": action_for_model1,
-    "model2": action_for_model2,
-    "model3": action_for_model3,
-    "model4": action_for_model4,
-}
+def compare_predictions(subcategory_pred_labels, label_encoder_classes):
+    predicted_labels = []
+    for idx in subcategory_pred_labels:
+        if idx < len(label_encoder_classes):
+            predicted_labels.append(label_encoder_classes[idx])
+        else:
+            predicted_labels.append('unknown')
+    return predicted_labels
+
+
+def predict_main_category(user_input: dict[str, str | float]) -> str:
+    encoder = encoder_provider.get_encoder("model0")
+    extracted_name_hidden, extracted_description_hidden, final_input_array, scaled_price = prepare_input(user_input,
+                                                                                                         scaler,
+                                                                                                         encoder,
+                                                                                                         categorical_columns)
+
+    predicted_labels = predict_model_1(final_input_array)
+    predicted_labels_2 = compare_predictions(predicted_labels, label_encoder_classes)
+    logger.info(predicted_labels)
+    logger.info(predicted_labels_2)
+    logger.info(predicted_labels_2[0])
+    category = predicted_labels_2[0].decode('utf-8')
+    return category
+
+
+def prepare_user_input(request: dict[str, Any]) -> dict[str, str | float]:
+    data = request['payload']
+    user_input = {
+        "name": data['name'],
+        "description": data['description'],
+        "price": float(data['price']),
+        "type": data['product_type'],
+        "manufacturer": data['manufacturer'],
+    }
+    return user_input
+
+
+def predict_with_models(request: dict[str, Any]) -> ResponsePrediction:
+    logger.info(f"PREDICT MODEL: request {request} ")
+    user_input = prepare_user_input(request)
+    main_category = predict_main_category(user_input)
+    categories = [main_category, "Category 2", "Category 3", "Category 4", "Category 5"]
+    logger.info(categories)
+    return ResponsePrediction(id=request["prediction_id"], categories=categories)
