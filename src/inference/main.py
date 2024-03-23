@@ -16,6 +16,7 @@ from core.logger_provider import logger
 from core.model_ai_provider import model_admin, model_paths
 from core.normalization_provider import init_normalization
 from core.scaler_model_provider import scaler_provider
+from core.label_encoder_provider import label_encoder_provider
 
 # Configure logging
 
@@ -84,7 +85,6 @@ async def startup_event():
     logger.info("Application setup completed.")
 
     # Initialize encoder files
-    encoder_provider
     if not encoder_provider.is_loaded:
         raise InitializationError("Not all Encoder files were loaded successfully.")
     logger.info("ENCODER: Encoder are ready to use")
@@ -99,36 +99,6 @@ async def startup_event():
         raise InitializationError("Not all scaler files were loaded successfully.")
     logger.info("SCALERS: Scalers are ready to use")
 
-
-"""
-
-    # Initialize BERT model
-    await bert_service.init_load_bert_model()
-    if bert_service.is_loaded:
-        logger.info("Tokenizer and model are ready to use")
-    else:
-        raise InitializationError("Failed to load tokenizer and model")
-
-    # Initialize scaler files
-    await scaler_provider.load_scaler_async()
-    if not scaler_provider.load_success:
-        logger.error("Not all Scaler files were loaded successfully.")
-    logger.info("SCALER: Scaler are ready to use")
-
-    # Initialize encoder files
-    await encoder_provider.load_encoder_async()
-    if not encoder_provider.load_success:
-        logger.error("Not all Encoder files were loaded successfully.")
-    logger.info("ENCODER: Encoder are ready to use")
-
-    # Initialize label encoder files
-    await label_encoder_provider.load_label_encoders_async()
-    if not label_encoder_provider.load_success:
-        logger.error("Not all Label Encoder files were loaded successfully.")
-    logger.info("LABEL-ENCODER: Encoder are ready to use")
-
-    
-"""
 
 if __name__ == "__main__":
     # Run the application with Uvicorn, with the ability to reload on code changes.

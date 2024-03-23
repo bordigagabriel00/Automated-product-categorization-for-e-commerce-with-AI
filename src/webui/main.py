@@ -16,6 +16,10 @@ from core import api_provider
 from core import setup
 from core.arangodb_provider import ArangoDBConnection
 from core.environment import ConfigProvider
+from core.eventbus import (bert_base_prediction_response_topic,
+                           bert_ft_prediction_response_topic,
+                           bert_base_prediction_request_topic,
+                           bert_ft_prediction_request_topic)
 from core.logger_provider import logger
 
 origins = [
@@ -31,10 +35,10 @@ fastapi_logger.setLevel(logger.level)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Permite todos los orígenes
-    allow_credentials=True,  # Permite cookies
-    allow_methods=["*"],  # Permite todos los métodos
-    allow_headers=["*"],  # Permite todos los encabezados
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Define db connection
@@ -56,27 +60,43 @@ async def init_options(option: ConfigProvider) -> None:
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    async def response_predict_handler(msg):
-        logger.info(f"Response model: '{msg.data.decode()}'")
+    # BERT Base Socket
+    async def bert_base_prediction_response_handler(msg):
+        logger.info(f"[BERT_BASE] Response model: '{msg.data.decode()}'")
         await websocket.send_text(msg.data.decode())
 
     nc = await nats.connect(settings.nats_url)
-    await nc.subscribe("response.predict", cb=response_predict_handler)
+    await nc.subscribe(bert_base_prediction_response_topic, cb=bert_base_prediction_response_handler)
+
+    # BERT FT Websocket
+    async def bert_ft_prediction_response_handler(msg):
+        logger.info(f"[BERT-FT] Response model: '{msg.data.decode()}'")
+        await websocket.send_text(msg.data.decode())
+
+    nc = await nats.connect(settings.nats_url)
+    await nc.subscribe(bert_ft_prediction_response_topic, cb=bert_ft_prediction_response_handler)
 
     await websocket.accept()
     while True:
+        logger.info(f"[WEBSOCKET] Starting")
         data = await websocket.receive_text()
+        logger.info(f"[WEBSOCKET] Receive data: '{data}'")
+
         request = json.loads(data)
-
         request_instance = RequestModel(payload=request)
-        json_request = request_instance.model_dump_json()
+        message = request_instance.model_dump_json()
+        subject = ""
 
-        logger.info(f"json request model: '{json_request}'")
+        if request['model'] == "bert.base":
+            subject = bert_base_prediction_request_topic
+            await nc.publish(subject, message.encode())
 
-        subject = "request.predict"
-        message = json_request
+        if request['model'] == "bert.ft":
+            subject = bert_ft_prediction_request_topic
+            await nc.publish(subject, message.encode())
 
-        await nc.publish(subject, message.encode())
+        logger.info(f"[WEBSOCKET] Publish message to: '{subject}'")
+        logger.info(f"[WEBSOCKET] Ending")
 
 
 @app.on_event("startup")

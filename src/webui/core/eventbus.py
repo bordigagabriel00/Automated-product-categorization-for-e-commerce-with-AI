@@ -1,16 +1,21 @@
 from nats.aio.client import Client as NATS
 
 import config
+from core.logger_provider import logger
+from config import settings
 
-topic_predict_request = "predict.request"
-topic_predict_response = "predict.response"
+bert_base_prediction_request_topic = "bert.base.prediction.request"
+bert_base_prediction_response_topic = "bert.base.prediction.response"
+
+bert_ft_prediction_request_topic = "bert.ft.prediction.request"
+bert_ft_prediction_response_topic = "bert.ft.prediction.response"
 topic_health = "health"
 
 
 class NatsProvider:
     def __init__(self, servers=None, max_reconnect_attempts=5, reconnect_time_wait=2):
         if servers is None:
-            servers = ["nats://127.0.0.1:4222"]
+            servers = [settings.nats_url]
         self.nc = NATS()
         self.servers = servers
         self.max_reconnect_attempts = max_reconnect_attempts
@@ -31,7 +36,7 @@ class NatsProvider:
 
     async def publish(self, subject, message):
         if not self.nc.is_connected:
-            loggerwarning("Not connected to NATS, attempting to reconnect...")
+            logger.warning("Not connected to NATS, attempting to reconnect...")
             await self.connect()
         try:
             await self.nc.publish(subject, message.encode())
@@ -42,7 +47,7 @@ class NatsProvider:
 
     async def subscribe(self, subject, callback):
         if not self.nc.is_connected:
-            loggerwarning("Not connected to NATS, attempting to reconnect...")
+            logger.warning("Not connected to NATS, attempting to reconnect...")
             await self.connect()
         try:
             await self.nc.subscribe(subject, cb=callback)

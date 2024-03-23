@@ -7,7 +7,7 @@
         <div class="grow  w-full ">
             <div class=" relative flex flex-col justify-center  overflow-hidden">
                 <div class="rounded-md lg:max-w-xl ">
-                    <h1 class="text-amber-50 block  text-2xl font-bold mb-2  text-center  ">Bert base</h1>
+                    <h1 class="text-amber-50 block  text-2xl font-bold mb-2  text-center  ">Bert with fine tunning</h1>
                     <h2 class="text-amber-500 block  text-sm font-bold mb-2  text-center  ">Predict category</h2>
                     <form id="frmPredict">
                         <div class="mb-4 pt-3">
@@ -112,7 +112,7 @@
     <script>
         // This script handles form submission, WebSocket connection for live prediction,
         // and dynamically updates the UI with prediction results.
-
+        
         document.addEventListener('DOMContentLoaded', (event) => {
             console.log('Initialization');
             const form = document.getElementById('frmPredict');
@@ -212,7 +212,7 @@
         // Handles form submission and sends data over WebSocket.
         function predictForm(event) {
             event.preventDefault();
-            const model = "bert.base"
+            const model = "bert.ft"
             const name = document.getElementById('name').value.trim();
             const description = document.getElementById('description').value.trim();
             const price = document.getElementById('price').value.trim();
@@ -224,7 +224,7 @@
                 return;
             }
 
-            const data = {name, description, price, product_type, manufacturer,model};
+            const data = {name, description, price, product_type, manufacturer, model};
             const jsonData = JSON.stringify(data);
             console.log("Request: " + jsonData)
             sendMessage(jsonData);

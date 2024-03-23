@@ -3,8 +3,12 @@ from nats.aio.client import Client as NATS
 import config
 from core.logger_provider import logger
 
-topic_predict_request = "request.predict"
-topic_predict_response = "response.predict"
+bert_base_prediction_request_topic = "bert.base.prediction.request"
+bert_base_prediction_response_topic = "bert.base.prediction.response"
+
+bert_ft_prediction_request_topic = "bert.ft.prediction.request"
+bert_ft_prediction_response_topic = "bert.ft.prediction.response"
+
 topic_health = "health"
 
 
@@ -70,5 +74,4 @@ class NatsProvider:
             raise
 
 
-# Uso del objeto global
 nats_provider = NatsProvider([config.settings.nats_url])

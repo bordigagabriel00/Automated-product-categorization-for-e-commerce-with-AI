@@ -1,6 +1,7 @@
 from typing import Optional
 
 from arango import ArangoClient
+from core.logger_provider import logger
 
 
 class ArangoDBConnection:
