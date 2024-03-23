@@ -25,7 +25,7 @@ class ScalerManager(metaclass=SingletonMeta):
             self.scalers = {}
             self.load_scaler(scaler_files_paths)
 
-    def load_scaler(self,model_path: Dict[str, str]) -> None:
+    def load_scaler(self, model_path: Dict[str, str]) -> None:
         all_loaded = True
         self.base_path = os.getcwd()
         for key, path in model_path.items():

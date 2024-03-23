@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from api.health.router import health_router
 from api.monitor.consumer import monitor_message_handler
-from api.simulator.consumer import bert_base_prediction_request_handler,bert_ft_prediction_request_handler
+from api.simulator.consumer import bert_base_prediction_request_handler, bert_ft_prediction_request_handler
 from core.eventbus import (nats_provider,
                            bert_base_prediction_request_topic,
                            topic_health,

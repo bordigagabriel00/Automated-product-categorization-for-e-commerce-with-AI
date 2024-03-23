@@ -233,7 +233,7 @@ def predict_category2(user_input, decoded_labels, ):
     model_1 = model_admin.get_model("model1")
     encoder_1 = encoder_provider.get_encoder("model1")
     scaler_1 = scaler_provider.get_scaler("model1")
-    logger.info(f"Openning {full_path}/assets/label_encoder/label_encoder_1.h5")
+    logger.info(f"Opening {full_path}/assets/label_encoder/label_encoder_1.h5")
     try:
         with h5py.File(f'{full_path}/assets/label_encoder/label_encoder_1.h5', 'r') as hf:
             label_encoder_classes_1 = hf['label_encoder_1'][:]
@@ -347,8 +347,8 @@ def predict_with_models(request: dict[str, Any]) -> ResponsePrediction:
 
     # Category 2
     # decode previous output of prediction 1
-    #decoded_labels_2 = [label.decode() for label in predicted_labels_3]
-    #category2, predict_labels_5 = predict_category3(user_input, decoded_labels, decoded_labels_2)
+    # decoded_labels_2 = [label.decode() for label in predicted_labels_3]
+    # category2, predict_labels_5 = predict_category3(user_input, decoded_labels, decoded_labels_2)
 
     categories = [main_category, category1, "", "", ""]
     logger.info(categories)
