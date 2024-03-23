@@ -4,6 +4,7 @@ from starlette.responses import HTMLResponse
 
 from config import settings
 from core.arangodb_provider import ArangoDBConnection
+from core.logger_provider import logger
 
 manufacturer_router = APIRouter(tags=['api'], prefix=f"{settings.base_url}/manufacturer")
 
