@@ -1,4 +1,3 @@
-from arango.exceptions import ArangoError
 from fastapi import APIRouter, Query, HTTPException
 from starlette.responses import HTMLResponse
 
@@ -31,7 +30,7 @@ async def type_search(q: str = Query(default=None, min_length=3, max_length=50, 
         results_html = "".join([f"<option value='{doc['name']}'></option>" for doc in results])
         return HTMLResponse(content=results_html, status_code=200)
 
-    except ArangoError as e:
+    except Exception as e:
         # Log the error details here using logging if needed
         logger.error(f"An error occurred while querying Manufacturer: {e}")
         raise HTTPException(status_code=500, detail="An error occurred while querying the database.")

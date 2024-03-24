@@ -401,7 +401,7 @@ button,
 }
 
 /*
-Make sure disabled buttons don't get the pointer cursor.
+Makefile sure disabled buttons don't get the pointer cursor.
 */
 
 :disabled {
@@ -409,7 +409,7 @@ Make sure disabled buttons don't get the pointer cursor.
 }
 
 /*
-1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
+1. Makefile replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
 2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
    This can trigger a poorly considered lint error in some tools but is included by design.
 */
@@ -438,7 +438,7 @@ video {
     height: auto;
 }
 
-/* Make elements with the HTML hidden attribute stay hidden by default */
+/* Makefile elements with the HTML hidden attribute stay hidden by default */
 
 [hidden] {
     display: none;

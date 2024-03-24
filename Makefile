@@ -1,14 +1,6 @@
 SERVICE = app
 DC = docker-compose -f docker-compose.yml
 
-# Run server
-run:
-	@poetry run uvicorn main:app --reload --port 9001
-check-port:
-	@sudo -S lsof -i :9001
-
-
-
 # Build images as defined in docker-compose.yml
 build:
 	@$(DC) build
@@ -37,8 +29,5 @@ stop:
 start:
 	@$(DC) start
 
-# Access shell inside the 'web' service container
-shell:
-	@$(DC) exec web /bin/sh
 
 .PHONY: build up down logs stop start shell

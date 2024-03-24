@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    container_name: webui-bert-dev
+    ports:
+      - "9001:9001"
+    volumes:
+      - .:/inference
+    network_mode: host

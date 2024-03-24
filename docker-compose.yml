@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  nats:
+    image: nats:2.8.4
+    container_name: nats_server
+    ports:
+      - "4222:4222" # Client connections
+      - "8222:8222" # HTTP management
+    networks:
+      - webnet
+
+  inference_app:
+    build: src/inference
+    container_name: inference-bert-dev
+    ports:
+      - "9001:9001"
+    volumes:
+      - .:/inference
+    networks:
+      - webnet
+    depends_on:
+      - nats
+
+  webui_app:
+    build: src/webui
+    container_name: webui-bert-dev
+    ports:
+      - "9000:9000"
+    volumes:
+      - .:/inference
+    networks:
+      - webnet
+    depends_on:
+      - nats
+      - inference_app
+networks:
+  webnet:

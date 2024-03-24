@@ -20,9 +20,10 @@ from core.logger_provider import logger
 from core.model_ai_provider import model_admin
 from core.normalization_provider import normalize_text
 from core.scaler_model_provider import scaler_provider
+from core.normalization_provider import stopwords,lemmatizer
 
 # Initialize NLTK resources
-stop_words = set(stopwords.words('english'))
+
 lemmatizer = WordNetLemmatizer()
 full_path = os.getcwd()
 

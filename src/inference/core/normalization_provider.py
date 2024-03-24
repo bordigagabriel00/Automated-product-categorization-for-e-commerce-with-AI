@@ -9,8 +9,11 @@ from nltk.stem import WordNetLemmatizer
 from pydantic import BaseModel
 
 # Initialize global variables for stopwords and lemmatizer
-stop_words = None
-lemmatizer: WordNetLemmatizer
+nltk.download('wordnet')
+nltk.download('stopwords')
+
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
 
 
 async def init_normalization():

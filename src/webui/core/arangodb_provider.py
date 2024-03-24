@@ -1,5 +1,4 @@
 from typing import Optional
-
 from arango import ArangoClient
 from core.logger_provider import logger
 
@@ -30,7 +29,7 @@ class ArangoDBConnection:
     def verify_connection(self) -> bool:
         try:
             # Attempt to list databases as a connection check
-            self.client.db()
+            self.client.databases()
             logger.info("DB: Connection to ArangoDB is successful.")
             return True
         except Exception as e:
