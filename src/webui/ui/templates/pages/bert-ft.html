@@ -144,7 +144,7 @@
         // Establishes WebSocket connection for live prediction results.
         function connectWebSocket() {
             if (!ws || ws.readyState === WebSocket.CLOSED) {
-                ws = new WebSocket("ws://127.0.0.1:9000/ws");
+                ws = new WebSocket("ws://127.0.0.1:9000/ws2");
 
                 ws.onopen = function () {
                     clearTimeout(timeoutChecker);

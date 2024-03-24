@@ -5,6 +5,7 @@ from api.simulator.model import PredictRequest
 from core.eventbus import bert_base_prediction_response_topic, bert_ft_prediction_response_topic
 from core.eventbus import nats_provider
 from core.inference_service import predict_with_models
+from core.inference_service_tunning import predict_ft_with_models
 from core.logger_provider import logger
 from core.normalization_provider import normalize_text
 
@@ -60,7 +61,7 @@ async def bert_ft_prediction_request_handler(msg):
 
     }
 
-    resp_prediction = predict_with_models(predict_request)
+    resp_prediction = predict_ft_with_models(predict_request)
 
     logger.info(f"[{section}] Predict result: {resp_prediction}")
     try:

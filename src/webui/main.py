@@ -1,3 +1,4 @@
+import asyncio
 import json
 import pathlib
 from typing import Any
@@ -6,6 +7,7 @@ import fastapi.applications
 import nats
 import uvicorn
 from fastapi import FastAPI, WebSocket
+from fastapi import WebSocketDisconnect
 from fastapi.logger import logger as fastapi_logger
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -58,45 +60,50 @@ async def init_options(option: ConfigProvider) -> None:
     option.set_config("app", "base_static_dir", BASE_STATIC_DIR)
 
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    # BERT Base Socket
-    async def bert_base_prediction_response_handler(msg):
-        logger.info(f"[BERT_BASE] Response model: '{msg.data.decode()}'")
-        await websocket.send_text(msg.data.decode())
 
-    nc = await nats.connect(settings.nats_url)
-    await nc.subscribe(bert_base_prediction_response_topic, cb=bert_base_prediction_response_handler)
+WEBSOCKET_TIMEOUT = 3000  #
 
-    # BERT FT Websocket
-    async def bert_ft_prediction_response_handler(msg):
-        logger.info(f"[BERT-FT] Response model: '{msg.data.decode()}'")
-        await websocket.send_text(msg.data.decode())
 
-    nc = await nats.connect(settings.nats_url)
-    await nc.subscribe(bert_ft_prediction_response_topic, cb=bert_ft_prediction_response_handler)
-
+async def listen_websocket(websocket: WebSocket, nc, response_topic, request_topic):
     await websocket.accept()
-    while True:
-        logger.info(f"[WEBSOCKET] Starting")
-        data = await websocket.receive_text()
-        logger.info(f"[WEBSOCKET] Receive data: '{data}'")
 
-        request = json.loads(data)
-        request_instance = RequestModel(payload=request)
-        message = request_instance.model_dump_json()
-        subject = ""
+    async def response_handler(msg):
+        await websocket.send_text(msg.data.decode())
 
-        if request['model'] == "bert.base":
-            subject = bert_base_prediction_request_topic
-            await nc.publish(subject, message.encode())
+    await nc.subscribe(response_topic, cb=response_handler)
 
-        if request['model'] == "bert.ft":
-            subject = bert_ft_prediction_request_topic
-            await nc.publish(subject, message.encode())
+    try:
+        while True:
+            data = await asyncio.wait_for(websocket.receive_text(), timeout=WEBSOCKET_TIMEOUT)
+            request = json.loads(data)
+            request_instance = RequestModel(payload=request)
+            message = request_instance.model_dump_json()
 
-        logger.info(f"[WEBSOCKET] Publish message to: '{subject}'")
-        logger.info(f"[WEBSOCKET] Ending")
+            if request['model'] in request_topic:
+                await nc.publish(request_topic[request['model']], message.encode())
+
+    except asyncio.TimeoutError:
+        logger.info("[WEBSOCKET] Timeout: No activity.")
+    except WebSocketDisconnect:
+        logger.info("[WEBSOCKET] Disconnected.")
+    except Exception as e:
+        logger.error(f"[WEBSOCKET] Error: {e}")
+    finally:
+        await nc.close()
+
+
+@app.websocket("/ws")
+async def websocket_endpoint_bert_base(websocket: WebSocket):
+    nc = await nats.connect(settings.nats_url)
+    await listen_websocket(websocket, nc, bert_base_prediction_response_topic,
+                           {"bert.base": bert_base_prediction_request_topic})
+
+
+@app.websocket("/ws2")
+async def websocket_endpoint_bert_ft(websocket: WebSocket):
+    nc = await nats.connect(settings.nats_url)
+    await listen_websocket(websocket, nc, bert_ft_prediction_response_topic,
+                           {"bert.ft": bert_ft_prediction_request_topic})
 
 
 @app.on_event("startup")
