@@ -1,4 +1,4 @@
 
 class InitializationError(Exception):
-    """Excepción personalizada para errores de inicialización."""
+    """Custom exception for initialization errors."""
     pass
