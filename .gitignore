@@ -12,4 +12,6 @@ src/inference/assets/finetunning_2/**
 src/inference/assets/finetunning_3/**
 src/inference/assets/finetunning_4/**
 src/inference/assets/finetunning_5/**
+infra/arangodb/migration/.idea/**
+notebooks/.idea/**
 
