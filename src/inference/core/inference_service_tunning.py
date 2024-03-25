@@ -10,7 +10,7 @@ from api.simulator.model import ResponsePrediction
 from core.logger_provider import logger
 from core.normalization_provider import stop_words, lemmatizer
 
-
+# Function to convert NLTK part-of-speech tags to those accepted by WordNet Lemmantizer: 
 def get_wordnet_pos(tag):
     if tag.startswith('J'):
         return 'a'  # Adjective
@@ -23,7 +23,7 @@ def get_wordnet_pos(tag):
     else:
         return 'n'  # Default to noun if not recognized
 
-
+# Function to remove extra new lines in a text and replace null values with empty strings:
 def remove_extra_new_lines(text):
     if pd.isnull(text):  # check if text is nan
         return ''  # replace with an empty string
@@ -32,12 +32,12 @@ def remove_extra_new_lines(text):
     clean_text = ' '.join(clean_text)
     return clean_text
 
-
+# Drop extra whitespace:
 def remove_extra_whitespace(text: str) -> str:
     spaceless_text = re.sub(r'\s+', ' ', text)
     return spaceless_text
 
-
+# Drop special chars and digits:
 def remove_special_chars(text: str, remove_digits: Optional[bool] = False) -> str:
     if remove_digits:
         pattern = r'[^a-zA-Z\s]'
@@ -47,7 +47,7 @@ def remove_special_chars(text: str, remove_digits: Optional[bool] = False) -> st
     cleaned_text = re.sub(pattern, '', text)
     return cleaned_text
 
-
+# TEXT NORMALIZATION
 def normalize_text(text):
     text = remove_extra_new_lines(text)
 
@@ -62,7 +62,7 @@ def normalize_text(text):
 
     return ' '.join(lemmas)
 
-
+# Function to prepare user input data from a request, extracting specific fields:
 def prepare_user_input(request: dict[str, Any]) -> dict[str, str | float]:
     data = request['payload']
     user_input = {
@@ -80,7 +80,7 @@ def predict_main_category(user_input: dict[str, str | float]) -> tuple[None, Non
 
     return None, None
 
-
+# Prediction of the categorization index for each model:
 def predict_ft_with_models(request: dict[str, Any]) -> ResponsePrediction:
     logger.info(f"PREDICT MODEL: request {request} ")
     user_input = prepare_user_input(request)
