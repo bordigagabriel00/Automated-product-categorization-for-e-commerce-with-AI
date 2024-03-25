@@ -9,21 +9,6 @@ PRE REQUIREMENTS:
 |- with the `pip install poetry` command from the WSL console.
 
 
-Instructions:
-
-1. From the console, navigate to the file path.
-
-## PREREQUIREMENTS:
-
-- This project is designed and structured to work from WSL/Linux.
-
--Install Docker.
-
--Install Poetry
-|
-|- with the `pip install poetry` command from the WSL console.
-
-
 ##Instructions:
 
 1. From the console, navigate to the file path.
