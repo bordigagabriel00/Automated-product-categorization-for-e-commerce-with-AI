@@ -1,0 +1,11 @@
+# Predict
+POST http://127.0.0.1:9000/api/v1/predict
+Content-Type: application/json
+
+{
+  "name": "Example Product",
+  "description": "This is a sample description of the product.",
+  "price": "0.0",
+  "type": "Gadget",
+  "manufacturer": "Example Manufacturer"
+}

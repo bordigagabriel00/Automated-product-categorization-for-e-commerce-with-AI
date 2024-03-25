@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="flex">
+        <div class="flex-none w-1/3  ">
+        </div>
+        <div class="grow  w-full ">
+            <div class=" relative flex flex-col justify-center  overflow-hidden">
+                <div class="rounded-md lg:max-w-xl ">
+                    <h1 class="text-amber-50 block  text-2xl font-bold mb-2  text-center  ">Bert base</h1>
+                    <h2 class="text-amber-500 block  text-sm font-bold mb-2  text-center  ">Predict category</h2>
+                    <form id="frmPredict">
+                        <div class="mb-4 pt-3">
+                            <label class="block  text-sm font-bold mb-2" for="name">
+                                Name
+                            </label>
+                            <input class=" appearance-none border rounded w-full py-1 px-1  leading-tight focus:outline-none focus:-outline "
+                                   id="name" type="text" placeholder="">
+                        </div>
+                        <div class="pt-3">
+                            <label class="block  text-sm font-bold mb-2" for="description">
+                                Description
+                            </label>
+                            <textarea
+                                    class=" appearance-none border rounded w-full py-1 px-1 mb-3 h-auto leading-tight focus:outline-none focus:-outline "
+                                    id="description" placeholder=""></textarea>
+                        </div>
+                        <div class="pt-3">
+                            <label class="block  text-sm font-bold mb-2" for="price">
+                                Price
+                            </label>
+                            <input
+                                    class=" appearance-none border rounded w-full py-1 px-1  leading-tight focus:outline-none focus:-outline "
+                                    id="price"
+                                    type="number"
+                                    step="any"
+                                    min="0"
+                                    placeholder="0.0"/>
+                        </div>
+                        <div class=" pt-3">
+                            <label class="block  text-sm font-bold mb-2" for="type-input">
+                                Type
+                            </label>
+
+                            <input list="type-data" id="type-input" name="q"
+                                   class="appearance-none border rounded w-full py-1 px-1 leading-tight focus:outline-none focus:-outline "
+                                   placeholder="Start typing..." size="50"
+                                   autocomplete="off" hx-get="/api/v1/type/search/"
+                                   hx-trigger="keyup changed delay:500ms"
+                                   hx-target="#type-response-container"
+                                   hx-include="#type-input">
+                            <datalist id="type-data"> <!-- Las opciones se llenarán aquí por JavaScript -->
+                            </datalist>
+                            <div id="type-response-container" style="display: none;"></div>
+
+                        </div>
+                        <div class=" pt-3">
+                            <label class="block  text-sm font-bold mb-2" for="manufacturer-input">
+                                Manufacturer
+                            </label>
+
+                            <input list="manufacturer-data"
+                                   id="manufacturer-input"
+                                   name="q"
+                                   class="appearance-none border rounded w-full py-1 px-1 leading-tight focus:outline-none focus:-outline "
+                                   placeholder="Start typing..." size="50"
+                                   autocomplete="off"
+                                   hx-get="/api/v1/manufacturer/search/"
+                                   hx-trigger="keyup changed delay:500ms,keyup[target.value.length > 2]"
+                                   hx-target="#manufacturer-response-container"
+                                   hx-include="#manufacturer-input">
+                            <datalist id="manufacturer-data"> <!-- Las opciones se llenarán aquí por JavaScript -->
+                            </datalist>
+                            <div id="manufacturer-response-container" style="display: none;"></div>
+
+                        </div>
+
+
+                        <div class="flex flex-row items-center justify-end p-3">
+                            <ul class="menu menu-horizontal bg-base-200 p-1">
+                                <li class="btn btn-neutral "><a href="javascript:void(0);"
+                                                                onclick="cleanForm()">Clean</a>
+                                </li>
+                                <button type="submit" class="btn btn-accent">Predict</button>
+                            </ul>
+
+                        </div>
+                    </form>
+                    <!-- Div donde se mostrará la respuesta -->
+                    <div id="response" class="text-sm font-bold mb-1 w-full"></div>
+
+
+                    <dialog id="modal" class="modal bg-base-100 rounded-lg p-5">
+                        <div class="modal-box relative">
+                            <h3 class="font-bold text-lg p-3">Attention!</h3>
+                            <p class="p-6">Please fill out all fields correctly or try again.</p>
+                            <div class="modal-action flex justify-end p-3">
+                                <button class="btn  btn-active " onclick="document.getElementById('modal').close()">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </dialog>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <script>
+        // This script handles form submission, WebSocket connection for live prediction,
+        // and dynamically updates the UI with prediction results.
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            console.log('Initialization');
+            const form = document.getElementById('frmPredict');
+            form.addEventListener('submit', predictForm);
+
+            // Handle dynamic updates from htmx responses
+            document.body.addEventListener('htmx:afterSwap', function (event) {
+                if (event.target.id === 'type-response-container') {
+                    const datalist = document.getElementById('type-data');
+                    datalist.innerHTML = event.target.innerHTML;
+                    event.target.innerHTML = '';
+                }
+
+                if (event.target.id === 'manufacturer-response-container') {
+                    const datalist = document.getElementById('manufacturer-data');
+                    datalist.innerHTML = event.target.innerHTML;
+                    event.target.innerHTML = '';
+                }
+            });
+
+            connectWebSocket();
+        });
+
+        let ws;
+        const retryInterval = 2000; // Reconnect attempt every 2 seconds
+        const timeout = 5000; // Connection timeout of 5 seconds
+        let timeoutChecker;
+
+        // Establishes WebSocket connection for live prediction results.
+        function connectWebSocket() {
+            if (!ws || ws.readyState === WebSocket.CLOSED) {
+                ws = new WebSocket("ws://127.0.0.1:9000/ws");
+
+                ws.onopen = function () {
+                    clearTimeout(timeoutChecker);
+                    console.log("WebSocket connection opened");
+                };
+
+                // Handles incoming WebSocket messages.
+                ws.onmessage = function (event) {
+                    console.log("Response: " + event.data.toString())
+
+                    // Displaying the response in the UI
+                    const responseDiv = document.getElementById('response');
+                    responseDiv.innerHTML = `<div></div>`;
+                    responseDiv.style.display = 'block';
+
+                    const response = JSON.parse(event.data);
+                    if (response) {
+                        const predictionId = response.id;
+                        const categories = response.categories;
+
+                        // Creating a response UI with indented category items.
+                        let responseContent = `<div class="p-4 mt-4 rounded bg-blue-100">
+                                <p><strong>Prediction ID:</strong> ${predictionId}</p>
+                                <p><strong>Categories:</strong></p>
+                                <ul style="margin-left: 20px;">`; // Items indented
+                        categories.forEach(category => {
+                            responseContent += `<li>${category}</li>`;
+                        });
+                        responseContent += `</ul></div>`;
+
+                        // Displaying the response in the UI
+                        const responseDiv = document.getElementById('response');
+                        responseDiv.innerHTML = responseContent;
+                        responseDiv.style.display = 'block';
+                    }
+                };
+
+                ws.onerror = function (error) {
+                    console.error("WebSocket connection error", error);
+                };
+
+                ws.onclose = function (event) {
+                    console.log("WebSocket connection closed. Attempting to reconnect...");
+                    setTimeout(connectWebSocket, retryInterval);
+                };
+
+                timeoutChecker = setTimeout(function () {
+                    if (ws.readyState !== WebSocket.OPEN) {
+                        console.log("WebSocket connection timed out. Closing...");
+                        ws.close();
+                    }
+                }, timeout);
+            }
+        }
+
+        // Clears the form fields.
+        function cleanForm() {
+            document.getElementById('name').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('price').value = '0.0';
+            document.getElementById('type-input').value = '';
+            document.getElementById('manufacturer-input').value = '';
+        }
+
+        // Handles form submission and sends data over WebSocket.
+        function predictForm(event) {
+            event.preventDefault();
+            const model = "bert.base"
+            const name = document.getElementById('name').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const price = document.getElementById('price').value.trim();
+            const product_type = document.getElementById('type-input').value;
+            const manufacturer = document.getElementById('manufacturer-input').value;
+
+            if (!name || !description || !price || product_type === '' || manufacturer === '') {
+                displayError("Please fill out all fields correctly.");
+                return;
+            }
+
+            const data = {name, description, price, product_type, manufacturer,model};
+            const jsonData = JSON.stringify(data);
+            console.log("Request: " + jsonData)
+            sendMessage(jsonData);
+        }
+
+        // Sends JSON data over the WebSocket if the connection is open.
+        function sendMessage(json) {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(json);
+            } else {
+                alert("WebSocket connection is not open. Please try again.");
+            }
+        }
+
+        // Displays a modal dialog with an error message.
+        function displayError(message) {
+            console.log(message);
+            document.getElementById('modal').showModal();
+        }
+    </script>
+
+
+{% endblock content %}

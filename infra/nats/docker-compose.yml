@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  nats:
+    image: nats:2.10.12-alpine3.19
+    container_name: nats_server
+    ports:
+      - "4222:4222" # Client connections
+      - "8222:8222" # HTTP management
+    network_mode: host
+    restart: always
+
+
+volumes:
+  nats_data:
+    driver: local
+

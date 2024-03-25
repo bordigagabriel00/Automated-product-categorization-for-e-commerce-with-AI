@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autocomplete con FastAPI, Tailwind, HTMX y DaisyUI</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@^3.0/dist/tailwind.min.css" rel="stylesheet">
+
+    <script src="https://unpkg.com/htmx.org@1.9.11"
+            integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+<body class="p-8 bg-gray-100">
+<div class=" pt-3">
+    <label class="block  text-sm font-bold mb-2" for="type-input">
+        Type
+    </label>
+
+    <input list="type-data" id="type-input" name="q"
+           class="input" placeholder="Start typing..." size="50"
+           autocomplete="off" hx-get="/api/v1/type/search/"
+           hx-trigger="keyup changed delay:500ms"
+           hx-target="#response-container"
+           hx-include="#type-input">
+    <datalist id="type-data">
+        <!-- Las opciones se llenarán aquí por JavaScript -->
+    </datalist>
+    <div id="response-container" style="display: none;"></div>
+
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const form = document.getElementById('frmPredict');
+        form.addEventListener('submit', predictForm);
+
+        document.body.addEventListener('htmx:afterSwap', function (event) {
+            if (event.target.id === 'response-container') {
+                const datalist = document.getElementById('product_type-data');
+                datalist.innerHTML = event.target.innerHTML;
+                event.target.innerHTML = '';
+            }
+        });
+    });
+
+    const typeInput = document.getElementById('product_type-input');
+    typeInput.addEventListener('input', (event) => {
+        const value = event.target.value;
+        const options = document.querySelectorAll('#product_type-data option');
+        const matchingOption = Array.from(options).find(option => option.value === value);
+        if (matchingOption) {
+            // Actualizar el input con el valor seleccionado si coincide con una opción
+            typeInput.value = matchingOption.value;
+        }
+    });
+
+</script>
+</body>
+</html>
