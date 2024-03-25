@@ -1,33 +1,56 @@
-SERVICE = app
-DC = docker-compose -f docker-compose.yml
+# DC=docker-compose
+#COMPOSE_FILES=src/inference/docker-compose.yml
+#src/webui/docker-compose.yml infra/nats/docker-compose.yml infra/arangodb/docker-compose.yml
+#UP_FILES=infra/nats/docker-compose.yml infra/arangodb/docker-compose.yml src/inference/docker-compose.yml src/webui/docker-compose.yml
 
-# Build images as defined in docker-compose.yml
+# Función para ejecutar docker-compose con cualquier conjunto de argumentos
+docker_compose_cmd = $(foreach file,$(1),$(DC) -f $(file) $(2);)
+
 build:
-	@$(DC) build
+	@$(call docker_compose_cmd,$(COMPOSE_FILES),build)
 
-up-fg:
-# Create and start containers in foreground
-	@$(DC) up
+up-nats:
+	@docker-compose -f infra/nats/docker-compose.yml up -d
 
-# Create and start containers in detached mode
-up:
-	@$(DC) up -d
+down-nats:
+	@docker-compose -f infra/nats/docker-compose.yml down
 
-# Stop and remove containers, networks, and volumes
-down:
-	@$(DC) down -v
+up-arangodb:
+	@docker-compose -f infra/arangodb/docker-compose.yml up -d
 
-# Follow log output from containers
-logs:
-	@$(DC) logs -f
+down-arangodb:
+	@docker-compose -f infra/arangodb/docker-compose.yml down
 
-# Stop services without removing them
-stop:
-	@$(DC) stop
+up-inference:
+	@docker-compose -f src/inference/docker-compose.yml up -d
 
-# Start services if they're stopped
-start:
-	@$(DC) start
+build-inference:
+	@docker-compose -f src/inference/docker-compose.yml build
 
+up-inference-log:
+	@docker-compose -f src/inference/docker-compose.yml up
 
-.PHONY: build up down logs stop start shell
+down-inference:
+	@docker-compose -f src/inference/docker-compose.yml down
+
+up-webui:
+	@docker-compose -f src/webui/docker-compose.yml up -d
+
+up-webui-log:
+	@docker-compose -f src/webui/docker-compose.yml up
+
+up-infra: up-nats up-arangodb
+
+down-infra: down-nats down-arangodb
+
+down-webui:
+	@docker-compose -f src/webui/docker-compose.yml down
+
+build-webui:
+	@docker-compose -f src/webui/docker-compose.yml build
+
+up-all: up-nats up-arangodb up-inference up-webui
+
+down-all: down-nats down-arangodb down-inference down-webui
+
+.PHONY:

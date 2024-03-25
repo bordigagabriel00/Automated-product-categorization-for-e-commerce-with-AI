@@ -1,10 +1,10 @@
 version: '3.8'
 services:
-  app:
+  inference_ms:
     build: .
     container_name: inference-bert-dev
     ports:
       - "9001:9001"
+    network_mode: host
     volumes:
       - .:/inference
-    network_mode: host

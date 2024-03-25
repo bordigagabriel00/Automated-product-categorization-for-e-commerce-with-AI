@@ -6,11 +6,12 @@ import pandas as pd
 from nltk import pos_tag, word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from pydantic import BaseModel
 
 # Initialize global variables for stopwords and lemmatizer
 nltk.download('wordnet')
 nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
 
 lemmatizer = WordNetLemmatizer()
 stop_words = set(stopwords.words('english'))
