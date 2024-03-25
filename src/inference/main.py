@@ -104,11 +104,3 @@ if __name__ == "__main__":
     # Run the application with Uvicorn, with the ability to reload on code changes.
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
 
-    """
-    TODO: Predict models
-    TODO: Docker compose / DockerFIle
-    TODO: TestUNI
-    TODO: Test integrator
-    TODO: Video
-    TODO: Server
-    """
