@@ -5,6 +5,7 @@ from typing import Dict, Optional
 from core.logger_provider import logger
 from core.singleton import SingletonMeta
 
+# File paths for different models:
 encoder_files_paths = {
     "model0": "/assets/encoder/encoder.pkl",
     "model1": "/assets/encoder/encoder_1.pkl",
@@ -13,8 +14,8 @@ encoder_files_paths = {
     "model4": "/assets/encoder/encoder_4.pkl",
 }
 
-
-# noinspection DuplicatedCode
+# Class to handle encoders, implementing the Singleton pattern:
+# During execution shows: "noinspection DuplicatedCode" (Due to time issues, a multiclass was not performed, so we iterated over the same function)
 class EncoderManager(metaclass=SingletonMeta):
     def __init__(self):
         self.is_loaded = None
@@ -23,6 +24,7 @@ class EncoderManager(metaclass=SingletonMeta):
             self.encoder = {}
             self.load_encoders(encoder_files_paths)
 
+    # Encoders loading and execution log:
     def load_encoders(self, model_path: Dict[str, str]) -> None:
         all_loaded = True  
         self.base_path = os.getcwd()   
@@ -40,6 +42,7 @@ class EncoderManager(metaclass=SingletonMeta):
                 
         self.is_loaded = all_loaded  
 
+    # 'get_encoder' function: returns the requested encoder or None if not found
     def get_encoder(self, key: str) -> Optional[Dict]:
         return self.encoder.get(key, None)
 
