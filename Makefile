@@ -64,7 +64,7 @@ down-all: down-nats down-arangodb down-inference down
 
 up-hub: up-infra up-hub
 
-up-down: down-hub down-infra
+down-hub: down-hub down-infra
 
 
 .PHONY:
