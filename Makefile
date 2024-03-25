@@ -33,6 +33,9 @@ up-inference-log:
 down-inference:
 	@docker-compose -f src/inference/docker-compose.yml down
 
+build-webui:
+	@docker-compose -f src/webui/docker-compose.yml build
+
 up-webui:
 	@docker-compose -f src/webui/docker-compose.yml up -d
 
@@ -49,8 +52,19 @@ down-webui:
 build-webui:
 	@docker-compose -f src/webui/docker-compose.yml build
 
+up-hub:
+	@docker-compose -f docker-compose-hub.yml up -d
+
+down-hub:
+	@docker-compose -f docker-compose-hub.yml down
+
 up-all: up-nats up-arangodb up-inference up-webui
 
-down-all: down-nats down-arangodb down-inference down-webui
+down-all: down-nats down-arangodb down-inference down
+
+up-hub: up-infra up-hub
+
+up-down: down-hub down-infra
+
 
 .PHONY:
