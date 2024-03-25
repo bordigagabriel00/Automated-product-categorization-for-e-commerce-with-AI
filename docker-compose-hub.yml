@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  inference_app:
+    image: castillo9x/anyoneai:latest
+    container_name: inference-bert-dev
+    ports:
+      - "9001:9001"
+    volumes:
+      - .:/inference
+    network_mode: host
+
+  webui_app:
+    image: castillo9x/anyoneai:webui01
+    container_name: webui-bert-dev
+    ports:
+      - "9000:9000"
+    volumes:
+      - .:/webui
+    network_mode: host
+    depends_on:
+      - inference_app
