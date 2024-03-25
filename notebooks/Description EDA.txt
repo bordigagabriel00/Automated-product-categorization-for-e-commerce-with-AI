@@ -1,0 +1,3 @@
+Based on the previous exploration, we identified that the largest number of products is described in the first 5 categories, taking the first as the parent category and 4 subsequent subcategories.
+Given this approach, we proceed to filter the base data to develop the final dataframe for preprocessing and generate the training dataframes.
+Finally, we identify that there are records of categories that have a frequency of less than 10, we store them in a new category that we will call 'other'.
