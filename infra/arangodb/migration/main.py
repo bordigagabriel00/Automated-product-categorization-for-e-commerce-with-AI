@@ -62,7 +62,7 @@ async def main():
         sys.exit("Error initializing the product model")
 
     # Verify connection model database
-    logging.info("DB: verify connection model database")
+    logging.info("DB: Verify connection model database")
     try:
         model_db = ArangoDBConnection.get_instance(settings.arango_url,
                                                    settings.username,

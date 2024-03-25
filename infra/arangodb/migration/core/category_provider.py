@@ -36,8 +36,6 @@ async def init_category_type(data, model_db: ArangoDBConnection):
                     logging.info(f"Category '{category['name']}' successfully inserted.")
                 except Exception as e:
                     logging.error(f"Error inserting category {category['name']}: {e}")
-            else:
-                logging.info(f"Category with ID {cat_id} already exists, skipping insertion.")
 
         logging.info("DB: Finished processing category data.")
         return True
