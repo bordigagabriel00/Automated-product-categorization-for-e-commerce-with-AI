@@ -1,7 +1,8 @@
-.idea**
-infra/scylladb/.idea
+.idea/**
+src/inference/.idea
 src/webui/.idea
-src/webui/.env
+src/webui/ui/static/node_modules
+infra/scylladb/.idea
 src/webui/ui/static/node_modules
 **/__pycache__/
 src/inference/poetry.lock
@@ -11,3 +12,4 @@ src/inference/assets/finetunning_2
 src/inference/assets/finetunning_3
 src/inference/assets/finetunning_4
 src/inference/assets/finetunning_5
+
